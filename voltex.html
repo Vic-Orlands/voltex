@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VOLTEX — Power. Transmitted.</title>
+    <meta
+      name="description"
+      content="An immersive green-tinted transmission atlas following Nigeria's power grid from generation to national control."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:wght@500;600&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./voltex.css" />
+  </head>
+  <body>
+    <div class="loader" id="loader">
+      <div class="loader__brand">VOLTEX</div>
+      <div class="loader__tag">Transmission atlas / initializing live grid</div>
+      <div class="loader__bar">
+        <span class="loader__fill" id="loader-fill"></span>
+      </div>
+      <div class="loader__meta">
+        <strong id="loader-pct">0%</strong>
+        <span id="loader-status">Booting control surfaces</span>
+      </div>
+    </div>
+
+    <canvas class="field-canvas" id="field-canvas" aria-hidden="true"></canvas>
+    <div class="bg-core" aria-hidden="true"></div>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-vignette" aria-hidden="true"></div>
+    <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+
+    <div class="progress-rail" aria-hidden="true">
+      <span class="progress-fill" id="progress-fill"></span>
+    </div>
+
+    <div class="corner-mark corner-mark--tl" aria-hidden="true"></div>
+    <div class="corner-mark corner-mark--tr" aria-hidden="true"></div>
+    <div class="corner-mark corner-mark--bl" aria-hidden="true"></div>
+    <div class="corner-mark corner-mark--br" aria-hidden="true"></div>
+
+    <!-- Grid status ticker -->
+    <div class="grid-ticker" aria-hidden="true">
+      <div class="grid-ticker__track">
+        <span class="grid-ticker__item"><strong>FREQ</strong>50.00 HZ</span>
+        <span class="grid-ticker__item"><strong>VOLTAGE</strong>440,000 V</span>
+        <span class="grid-ticker__item"><strong>LOAD</strong>78%</span>
+        <span class="grid-ticker__item"
+          ><strong>NODES</strong>2,847 ACTIVE</span
+        >
+        <span class="grid-ticker__item"><strong>LINE LOSS</strong>3%</span>
+        <span class="grid-ticker__item"><strong>STATUS</strong>NOMINAL</span>
+        <span class="grid-ticker__item"
+          ><strong>NCC-LAG-01</strong>TRANSMIT MODE</span
+        >
+        <span class="grid-ticker__item"
+          ><strong>COVERAGE</strong>95% NATIONAL</span
+        >
+        <span class="grid-ticker__item"><strong>FREQ</strong>50.00 HZ</span>
+        <span class="grid-ticker__item"><strong>VOLTAGE</strong>440,000 V</span>
+        <span class="grid-ticker__item"><strong>LOAD</strong>78%</span>
+        <span class="grid-ticker__item"
+          ><strong>NODES</strong>2,847 ACTIVE</span
+        >
+        <span class="grid-ticker__item"><strong>LINE LOSS</strong>3%</span>
+        <span class="grid-ticker__item"><strong>STATUS</strong>NOMINAL</span>
+        <span class="grid-ticker__item"
+          ><strong>NCC-LAG-01</strong>TRANSMIT MODE</span
+        >
+        <span class="grid-ticker__item"
+          ><strong>COVERAGE</strong>95% NATIONAL</span
+        >
+      </div>
+    </div>
+
+    <header class="nav">
+      <a class="nav__brand" href="#hero"> <span>VOLT</span><em>EX</em> </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#s1">Journey</a>
+        <a href="#atlas">Atlas</a>
+        <a href="#finale">Delivery</a>
+      </nav>
+      <div class="nav__status">
+        <span class="nav__dot"></span>
+        <span> 440KV GRID LIVE </span>
+        <span id="nav-time">00:00:00</span>
+      </div>
+    </header>
+
+    <aside class="hud hud--left">
+      FREQ: 50.00 HZ<br />
+      BULK VOLT: 440,000 V<br />
+      GRID SPAN: 800 KM<br />
+      STATUS: NOMINAL
+    </aside>
+
+    <aside class="hud hud--right">
+      LAT: 6.5244° N<br />
+      LON: 3.3792° E<br />
+      NODE: NCC-LAG-01<br />
+      MODE: TRANSMIT
+    </aside>
+
+    <div class="dot-rail" id="dot-rail" aria-hidden="true">
+      <button
+        class="dot-rail__dot is-active"
+        data-target="hero"
+        aria-label="Hero"
+      ></button>
+      <button
+        class="dot-rail__dot"
+        data-target="s1"
+        aria-label="Scene 1"
+      ></button>
+      <button
+        class="dot-rail__dot"
+        data-target="s2"
+        aria-label="Scene 2"
+      ></button>
+      <button
+        class="dot-rail__dot"
+        data-target="s3"
+        aria-label="Scene 3"
+      ></button>
+      <button
+        class="dot-rail__dot"
+        data-target="s4"
+        aria-label="Scene 4"
+      ></button>
+      <button
+        class="dot-rail__dot"
+        data-target="s5"
+        aria-label="Scene 5"
+      ></button>
+      <button
+        class="dot-rail__dot"
+        data-target="atlas"
+        aria-label="Atlas"
+      ></button>
+      <button
+        class="dot-rail__dot"
+        data-target="finale"
+        aria-label="Finale"
+      ></button>
+    </div>
+
+    <main class="voltex-main" id="main">
+      <section class="hero" id="hero" data-dot="hero">
+        <div class="hero__copy">
+          <p class="hero__eyebrow">
+            Nigeria Power Grid — Transmission Journey 2025
+          </p>
+          <h1 class="hero__title">
+            <span class="hero__line"><span>POWER.</span></span>
+            <span class="hero__line"
+              ><span class="hero__accent">TRANS-</span></span
+            >
+            <span class="hero__line"><span>MITTED.</span></span>
+          </h1>
+          <p class="hero__body">
+            Follow 440,000 volts from generating station to your doorstep
+            through a cleaner, more cinematic atlas of transmission
+            infrastructure, control rooms, substations, and national
+            distribution intelligence.
+          </p>
+          <div class="hero__actions">
+            <a class="hero__btn hero__btn--solid" href="#s1"
+              >Start the transmission</a
+            >
+            <a class="hero__btn" href="#atlas">Open image atlas</a>
+          </div>
+        </div>
+
+        <div class="hero__visual">
+          <div class="orbital-core">
+            <div class="orbital-core__ring orbital-core__ring--outer"></div>
+            <div class="orbital-core__ring orbital-core__ring--mid"></div>
+            <div class="orbital-core__ring orbital-core__ring--inner"></div>
+            <div class="orbital-core__beam orbital-core__beam--a"></div>
+            <div class="orbital-core__beam orbital-core__beam--b"></div>
+            <div class="orbital-core__beam orbital-core__beam--c"></div>
+            <div class="orbital-core__pulse"></div>
+          </div>
+          <div class="hero__legend">
+            <span>bulk transmission</span>
+            <strong>440kV</strong>
+            <small>step-up, move, step-down, distribute, monitor</small>
+          </div>
+        </div>
+
+        <div class="scroll-cue">
+          <span>SCROLL</span>
+          <i></i>
+        </div>
+      </section>
+
+      <section class="journey-scene" id="s1" data-dot="s1">
+        <div class="journey-scene__spacer"></div>
+        <div class="journey-scene__sticky">
+          <div class="journey-copy">
+            <div class="journey-copy__num">01</div>
+            <div class="journey-copy__tag">Origin · Generation</div>
+            <h2 class="journey-copy__title">THE POWER <span>FACILITY</span></h2>
+            <p class="journey-copy__body">
+              Deep within the generation complex, turbines spinning at 3,000 RPM
+              convert thermal energy into electrical current. Alternators
+              produce 11kV AC power, the raw pulse that begins its journey
+              across the nation.
+            </p>
+            <div class="journey-data">
+              <div class="journey-data__row">
+                <span>OUTPUT</span><i><b style="width: 92%"></b></i
+                ><strong>920MW</strong>
+              </div>
+              <div class="journey-data__row">
+                <span>LOAD</span><i><b style="width: 78%"></b></i
+                ><strong>78%</strong>
+              </div>
+              <div class="journey-data__row">
+                <span>EFFICIENCY</span><i><b style="width: 85%"></b></i
+                ><strong>85%</strong>
+              </div>
+            </div>
+            <div class="journey-stats">
+              <div><strong>920</strong><span>MW GENERATED</span></div>
+              <div><strong>11kV</strong><span>BASE VOLTAGE</span></div>
+            </div>
+          </div>
+          <div class="journey-stage">
+            <div class="journey-stage__panel journey-stage__panel--generation">
+              <div class="journey-stage__grid"></div>
+              <div class="energy-node energy-node--lg"></div>
+              <div class="energy-node energy-node--md"></div>
+              <div class="energy-node energy-node--sm"></div>
+              <div class="journey-stage__caption">
+                Generation chamber / live alternator field
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider">
+        <span></span>
+        <p>STEP-UP INITIATED</p>
+        <span></span>
+      </div>
+
+      <section class="journey-scene journey-scene--right" id="s2" data-dot="s2">
+        <div class="journey-scene__spacer"></div>
+        <div class="journey-scene__sticky">
+          <div class="journey-stage">
+            <div class="journey-stage__panel journey-stage__panel--lines">
+              <div class="journey-stage__lines"></div>
+              <div class="tower"></div>
+              <div class="tower tower--rear"></div>
+              <div class="journey-stage__caption">
+                Long-range transmission corridor / low-loss mode
+              </div>
+            </div>
+          </div>
+          <div class="journey-copy journey-copy--right">
+            <div class="journey-copy__num">02</div>
+            <div class="journey-copy__tag">Transmission · 440kV</div>
+            <h2 class="journey-copy__title">
+              HIGH VOLTAGE <span class="alt">LINES</span>
+            </h2>
+            <p class="journey-copy__body">
+              Step-up transformers elevate voltage to 440,000 volts. At this
+              level, current drops dramatically, minimizing resistive heat loss.
+              Towers over 50 meters tall move enough power for a million homes
+              across the national corridor.
+            </p>
+            <div class="journey-data">
+              <div class="journey-data__row">
+                <span>VOLTAGE</span><i><b style="width: 100%"></b></i
+                ><strong>440KV</strong>
+              </div>
+              <div class="journey-data__row">
+                <span>LINE LOSS</span
+                ><i><b class="warn" style="width: 3%"></b></i
+                ><strong>3%</strong>
+              </div>
+            </div>
+            <div class="journey-stats journey-stats--right">
+              <div><strong>440</strong><span>KV VOLTAGE</span></div>
+              <div><strong>800</strong><span>KM SPAN</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider">
+        <span></span>
+        <p>GRID NODE REACHED</p>
+        <span></span>
+      </div>
+
+      <section class="journey-scene" id="s3" data-dot="s3">
+        <div class="journey-scene__spacer"></div>
+        <div class="journey-scene__sticky">
+          <div class="journey-copy">
+            <div class="journey-copy__num">03</div>
+            <div class="journey-copy__tag">Substation · Step-Down</div>
+            <h2 class="journey-copy__title">THE <span>SUBSTATION</span></h2>
+            <p class="journey-copy__body">
+              The bulk transmission substation receives 440kV and reduces it to
+              132kV. Banks of power transformers, circuit breakers, and bus bars
+              manage the immense energy flow, acting like a steel nervous system
+              for the national grid.
+            </p>
+            <div class="journey-data">
+              <div class="journey-data__row">
+                <span>INPUT</span><i><b style="width: 100%"></b></i
+                ><strong>440KV</strong>
+              </div>
+              <div class="journey-data__row">
+                <span>OUTPUT</span><i><b style="width: 60%"></b></i
+                ><strong>132KV</strong>
+              </div>
+              <div class="journey-data__row">
+                <span>UPTIME</span><i><b style="width: 99%"></b></i
+                ><strong>99.97%</strong>
+              </div>
+            </div>
+            <div class="journey-stats">
+              <div><strong>6</strong><span>TRANSFORMER BANKS</span></div>
+              <div><strong>132</strong><span>KV OUTPUT</span></div>
+            </div>
+          </div>
+          <div class="journey-stage">
+            <div class="journey-stage__panel journey-stage__panel--substation">
+              <div class="substation-grid"></div>
+              <div class="substation-cell"></div>
+              <div class="substation-cell substation-cell--b"></div>
+              <div class="substation-cell substation-cell--c"></div>
+              <div class="journey-stage__caption">
+                Bulk transmission substation / routing and protection
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider">
+        <span></span>
+        <p>DISTRIBUTION BEGINS</p>
+        <span></span>
+      </div>
+
+      <section class="journey-scene journey-scene--right" id="s4" data-dot="s4">
+        <div class="journey-scene__spacer"></div>
+        <div class="journey-scene__sticky">
+          <div class="journey-stage">
+            <div class="journey-stage__panel journey-stage__panel--urban">
+              <div class="city-grid"></div>
+              <div class="city-node"></div>
+              <div class="city-node city-node--b"></div>
+              <div class="city-node city-node--c"></div>
+              <div class="journey-stage__caption">
+                Urban distribution lattice / neighborhood step-down
+              </div>
+            </div>
+          </div>
+          <div class="journey-copy journey-copy--right">
+            <div class="journey-copy__num">04</div>
+            <div class="journey-copy__tag">Distribution · Urban Grid</div>
+            <h2 class="journey-copy__title">
+              URBAN <span class="alt">DISTRIBUTION</span>
+            </h2>
+            <p class="journey-copy__body">
+              Distribution transformers on rooftops and poles bring voltage from
+              11kV to 240V. These compact conversion points serve neighborhoods,
+              industrial estates, and business corridors, completing the journey
+              from generator to socket in milliseconds.
+            </p>
+            <div class="journey-data">
+              <div class="journey-data__row">
+                <span>11KV IN</span><i><b style="width: 100%"></b></i
+                ><strong></strong>
+              </div>
+              <div class="journey-data__row">
+                <span>240V OUT</span><i><b class="ok" style="width: 35%"></b></i
+                ><strong></strong>
+              </div>
+            </div>
+            <div class="journey-stats journey-stats--right">
+              <div><strong>240</strong><span>V END USER</span></div>
+              <div><strong>50Hz</strong><span>FREQUENCY</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider">
+        <span></span>
+        <p>SITUATION ROOM</p>
+        <span></span>
+      </div>
+
+      <section class="journey-scene" id="s5" data-dot="s5">
+        <div class="journey-scene__spacer"></div>
+        <div class="journey-scene__sticky">
+          <div class="journey-copy">
+            <div class="journey-copy__num">05</div>
+            <div class="journey-copy__tag">Control · SCADA</div>
+            <h2 class="journey-copy__title">SITUATION <span>ROOM</span></h2>
+            <p class="journey-copy__body">
+              At the National Control Center, engineers monitor every node in
+              real time. SCADA systems track thousands of measurement points
+              across the network, detect faults in milliseconds, and reroute
+              load to keep the system stable.
+            </p>
+            <div class="journey-data">
+              <div class="journey-data__row">
+                <span>NODES</span><i><b style="width: 100%"></b></i
+                ><strong>2,847</strong>
+              </div>
+              <div class="journey-data__row">
+                <span>ALERTS</span
+                ><i><b class="danger" style="width: 1%"></b></i
+                ><strong>CLEAR</strong>
+              </div>
+              <div class="journey-data__row">
+                <span>COVERAGE</span><i><b style="width: 95%"></b></i
+                ><strong>95%</strong>
+              </div>
+            </div>
+            <div class="journey-stats">
+              <div><strong>24/7</strong><span>MONITORING</span></div>
+              <div><strong>0.3s</strong><span>RESPONSE TIME</span></div>
+            </div>
+          </div>
+          <div class="journey-stage">
+            <div class="journey-stage__panel journey-stage__panel--control">
+              <div class="control-map"></div>
+              <div class="control-wave"></div>
+              <div class="control-wave control-wave--b"></div>
+              <div class="journey-stage__caption">
+                National control center / live telemetry and switching
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="atlas" id="atlas" data-dot="atlas">
+        <div class="atlas__intro">
+          <p class="atlas__eyebrow">Interactive image atlas</p>
+          <h2 class="atlas__title">Zoom through the transmission network.</h2>
+          <p class="atlas__body">
+            A linked image field inspired by intelligence maps and network
+            diagrams. Hover to tilt. Click any node and the section zooms
+            inward, clarifying the image while opening context on the grid,
+            transformers, cables, market operators, oversight, and delivery
+            chain.
+          </p>
+        </div>
+
+        <div class="atlas__shell" id="atlas-shell">
+          <div class="atlas-details" id="atlas-details">
+            <p class="atlas-details__eyebrow" id="atlas-kicker">
+              Grid intelligence / 01
+            </p>
+            <h3 class="atlas-details__title" id="atlas-title">
+              National Transmission Grid
+            </h3>
+            <p class="atlas-details__copy" id="atlas-copy">
+              The national grid binds generating assets, regional substations,
+              control rooms, and last-mile distribution into one constantly
+              balanced system.
+            </p>
+            <div class="atlas-details__stats" id="atlas-stats">
+              <div><strong>440kV</strong><span>PRIMARY BACKBONE</span></div>
+              <div><strong>800km</strong><span>LONG-RANGE CORRIDORS</span></div>
+            </div>
+            <blockquote class="atlas-details__quote" id="atlas-quote">
+              “Transmission is not one object. It is choreography across steel,
+              distance, switching, regulation, and time.”
+            </blockquote>
+          </div>
+
+          <div class="atlas-stage" id="atlas-stage">
+            <div class="atlas-stage__frame">
+              <svg
+                class="atlas-stage__links"
+                viewBox="0 0 1000 860"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path d="M150 120 L290 220 L470 160 L650 250 L820 160" />
+                <path d="M290 220 L260 420 L420 500 L620 540 L820 420" />
+                <path d="M470 160 L500 350 L620 540" />
+                <path d="M500 350 L360 650 L620 700 L820 420" />
+                <path d="M260 420 L150 700 L360 650" />
+              </svg>
+
+              <div class="atlas-network" id="atlas-network">
+                <button
+                  class="atlas-node is-active"
+                  data-node="grid"
+                  style="--x: 12%; --y: 8%"
+                >
+                  <img
+                    src="https://picsum.photos/seed/voltex-grid/340/420"
+                    alt="National transmission grid node"
+                  />
+                  <span>Grid</span>
+                </button>
+                <button
+                  class="atlas-node"
+                  data-node="transformers"
+                  style="--x: 27%; --y: 20%"
+                >
+                  <img
+                    src="https://picsum.photos/seed/voltex-transformers/340/420"
+                    alt="Transformer banks"
+                  />
+                  <span>Transformers</span>
+                </button>
+                <button
+                  class="atlas-node"
+                  data-node="cables"
+                  style="--x: 45%; --y: 12%"
+                >
+                  <img
+                    src="https://picsum.photos/seed/voltex-cables/340/420"
+                    alt="Power cables and lines"
+                  />
+                  <span>Power cables</span>
+                </button>
+                <button
+                  class="atlas-node"
+                  data-node="substations"
+                  style="--x: 64%; --y: 24%"
+                >
+                  <img
+                    src="https://picsum.photos/seed/voltex-substations/340/420"
+                    alt="Bulk substations"
+                  />
+                  <span>Substations</span>
+                </button>
+                <button
+                  class="atlas-node"
+                  data-node="discos"
+                  style="--x: 18%; --y: 46%"
+                >
+                  <img
+                    src="https://picsum.photos/seed/voltex-discos/340/420"
+                    alt="Distribution companies"
+                  />
+                  <span>DisCos</span>
+                </button>
+                <button
+                  class="atlas-node"
+                  data-node="market"
+                  style="--x: 42%; --y: 54%"
+                >
+                  <img
+                    src="https://picsum.photos/seed/voltex-market/340/420"
+                    alt="Market operator and dispatch"
+                  />
+                  <span>Market ops</span>
+                </button>
+                <button
+                  class="atlas-node"
+                  data-node="commission"
+                  style="--x: 61%; --y: 58%"
+                >
+                  <img
+                    src="https://picsum.photos/seed/voltex-commission/340/420"
+                    alt="Regulatory commission oversight"
+                  />
+                  <span>Commission</span>
+                </button>
+                <button
+                  class="atlas-node"
+                  data-node="control"
+                  style="--x: 80%; --y: 42%"
+                >
+                  <img
+                    src="https://picsum.photos/seed/voltex-control/340/420"
+                    alt="National control room"
+                  />
+                  <span>Control</span>
+                </button>
+                <button
+                  class="atlas-node"
+                  data-node="oversight"
+                  style="--x: 34%; --y: 76%"
+                >
+                  <img
+                    src="https://picsum.photos/seed/voltex-oversight/340/420"
+                    alt="National oversight structure"
+                  />
+                  <span>Oversight</span>
+                </button>
+                <button
+                  class="atlas-node"
+                  data-node="delivery"
+                  style="--x: 61%; --y: 82%"
+                >
+                  <img
+                    src="https://picsum.photos/seed/voltex-delivery/340/420"
+                    alt="End-user delivery network"
+                  />
+                  <span>Delivery</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="finale" id="finale" data-dot="finale">
+        <p class="finale__eyebrow">End of journey</p>
+        <h2 class="finale__title">
+          <span>POWER</span>
+          <span class="accent">DELIVERED.</span>
+        </h2>
+        <p class="finale__body">
+          From turbine to terminal, every electron travels a precise engineered
+          path. 440,000 volts are stepped, steered, balanced, and translated
+          into the everyday reliability people feel only when it works.
+        </p>
+        <a class="hero__btn" href="#hero">Back to Home</a>
+      </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.8/dist/lenis.min.js"></script>
+    <script src="./voltex.js"></script>
+  </body>
+</html>

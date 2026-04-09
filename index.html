@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POWER // Future Signals</title>
+    <meta
+      name="description"
+      content="An immersive futuristic landing page built with oversized typography, cinematic motion, diagonal media choreography, and smooth scrolling."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas class="starfield" aria-hidden="true"></canvas>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="cursor-halo" aria-hidden="true"></div>
+
+    <div class="progress-rail" aria-hidden="true">
+      <span class="progress-fill"></span>
+    </div>
+
+    <header class="site-header">
+      <a class="brand" href="#top">
+        <span>POWER</span>
+        <small>future signal engine</small>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#experience">Experience</a>
+        <a href="#manifesto">Manifesto</a>
+        <a href="#metrics">Metrics</a>
+        <a href="./voltex.html">Voltex</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <a class="header-cta" href="#contact">Enter the stream</a>
+    </header>
+
+    <main>
+      <section class="hero section-dark" id="top" data-theme="dark">
+        <div class="hero-copy">
+          <p class="eyebrow">Immersive systems for brands, products, and culture.</p>
+          <h1 class="hero-title" aria-label="Power the future before it loads">
+            <span class="headline-line" data-depth="0.5">POWER</span>
+            <span class="headline-line" data-depth="0.85">THE</span>
+            <span class="headline-line" data-depth="1.1">FUTURE</span>
+            <span class="headline-line accent" data-depth="1.45">BEFORE IT LOADS</span>
+          </h1>
+          <div class="hero-meta">
+            <p>
+              We design living launch experiences where giant typography, fluid motion,
+              and responsive media turn every scroll into a controlled detonation.
+            </p>
+            <div class="hero-actions">
+              <a href="#experience" class="pill-button pill-button--solid">Enter live mode</a>
+              <a href="#manifesto" class="pill-button">View manifesto</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="core-shell">
+            <div class="core-ring core-ring--outer"></div>
+            <div class="core-ring core-ring--mid"></div>
+            <div class="core-ring core-ring--inner"></div>
+            <div class="core-glow"></div>
+            <div class="core-grid"></div>
+            <div class="core-burst"></div>
+          </div>
+
+          <div class="signal-hud">
+            <div>
+              <span>Latency</span>
+              <strong>12ms</strong>
+            </div>
+            <div>
+              <span>Immersion</span>
+              <strong>98%</strong>
+            </div>
+            <div>
+              <span>Channels</span>
+              <strong>∞</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="diagonal-section section-dark" id="experience" data-theme="dark">
+        <div class="diagonal-sticky">
+          <div class="diagonal-copy">
+            <p class="section-label">01 / cinematic systems</p>
+            <h2>
+              We turn a single
+              <em>idea fragment</em>
+              into a full-screen event.
+            </h2>
+            <p>
+              Scroll-driven framing, engineered tension, and media that flies in from the
+              margins until the entire viewport feels like a controlled portal.
+            </p>
+          </div>
+
+          <div class="diagonal-stage">
+            <div class="diagonal-shell">
+              <div class="diagonal-shell__frame">
+                <video
+                  class="diagonal-video"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  preload="auto"
+                  poster=""
+                >
+                  <source
+                    src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+                <div class="diagonal-overlay"></div>
+                <div class="diagonal-grid"></div>
+                <div class="diagonal-copyline">
+                  <span>bottom-right ingress</span>
+                  <span>full-screen lock</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="diagonal-text">
+              <span>DIAGONAL</span>
+              <span>TAKEOVER</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="manifesto section-light" id="manifesto" data-theme="light">
+        <div class="manifesto-intro">
+          <p class="section-label section-label--dark">02 / huge type + hover cinema</p>
+          <p class="manifesto-lead">
+            Oversized words hold the stage while motion-rich media slips between them like a
+            signal breach.
+          </p>
+        </div>
+
+        <div class="manifesto-wall">
+          <p class="manifesto-line">WE BUILD</p>
+          <p class="manifesto-line">A NEW</p>
+          <p class="manifesto-line">REALITY</p>
+          <p class="manifesto-line">THAT PULLS</p>
+          <p class="manifesto-line">PEOPLE</p>
+          <p class="manifesto-line">THROUGH</p>
+          <p class="manifesto-line">THE SCREEN</p>
+        </div>
+
+        <div class="signal-cards">
+          <article class="signal-card" data-tone="violet">
+            <div class="signal-card__meta">
+              <span>Hover / 01</span>
+              <strong>Worldbuilding preview</strong>
+            </div>
+            <div class="signal-card__dots" aria-hidden="true"></div>
+            <video class="signal-card__video" autoplay muted loop playsinline preload="metadata">
+              <source
+                src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+                type="video/mp4"
+              />
+            </video>
+          </article>
+
+          <article class="signal-card" data-tone="cyan">
+            <div class="signal-card__meta">
+              <span>Hover / 02</span>
+              <strong>Avatar energy burst</strong>
+            </div>
+            <div class="signal-card__dots" aria-hidden="true"></div>
+            <video class="signal-card__video" autoplay muted loop playsinline preload="metadata">
+              <source
+                src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                type="video/mp4"
+              />
+            </video>
+          </article>
+
+          <article class="signal-card" data-tone="amber">
+            <div class="signal-card__meta">
+              <span>Hover / 03</span>
+              <strong>Motion system reveal</strong>
+            </div>
+            <div class="signal-card__dots" aria-hidden="true"></div>
+            <video class="signal-card__video" autoplay muted loop playsinline preload="metadata">
+              <source
+                src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+                type="video/mp4"
+              />
+            </video>
+          </article>
+        </div>
+      </section>
+
+      <section class="metrics section-dark" id="metrics" data-theme="dark">
+        <div class="metrics-copy">
+          <p class="section-label">03 / signal telemetry</p>
+          <h2>Built to feel impossible. Tuned to perform.</h2>
+        </div>
+
+        <div class="metrics-grid">
+          <article class="metric-card metric-card--light">
+            <span>Live environments</span>
+            <strong>24</strong>
+            <p>Persistent launch surfaces engineered for product reveals, world premieres, and brand rituals.</p>
+          </article>
+
+          <article class="metric-card metric-card--mesh">
+            <span>Responsive scenes</span>
+            <strong>360°</strong>
+            <p>Motion fields, glass layers, and signal noise reacting to cursor drift and scroll energy.</p>
+          </article>
+
+          <article class="metric-card metric-card--acid">
+            <span>Frame sync</span>
+            <strong>0.016s</strong>
+            <p>Every micro-transition is designed for momentum, not decoration.</p>
+          </article>
+
+          <article class="metric-card metric-card--void">
+            <span>System mood</span>
+            <strong>FUTURE</strong>
+            <p>Editorial scale. Stage-light contrast. Diagonal movement. No generic landing-page rhythms.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="partners section-dark" id="domains" data-theme="dark">
+        <div class="partners-copy">
+          <p class="section-label">04 / operating across culture</p>
+          <p>
+            The language stays cinematic across fashion, gaming, music, mobility, and high-touch digital products.
+          </p>
+        </div>
+
+        <div class="partners-list" aria-label="Creative domains">
+          <span>FASHION SYSTEMS</span>
+          <span>GAME WORLDS</span>
+          <span>MUSIC STAGES</span>
+          <span>MOBILITY LAUNCHES</span>
+          <span>SPORT CULTURE</span>
+          <span>AI PRODUCTS</span>
+        </div>
+      </section>
+
+      <section class="contact section-light" id="contact" data-theme="light">
+        <div class="contact-panel">
+          <p class="section-label section-label--dark">05 / final transmission</p>
+          <h2>Let’s build the thing people can’t stop replaying.</h2>
+          <p>
+            Giant words, liquid motion, impossible reveals, and a landing page that feels more like an event than a website.
+          </p>
+          <div class="contact-actions">
+            <a href="mailto:hello@power.live" class="pill-button pill-button--solid">hello@power.live</a>
+            <a href="./voltex.html" class="pill-button">Open VOLTEX</a>
+            <a href="#top" class="pill-button">Back to top</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="mini-hud" aria-hidden="true">
+      <span class="mini-hud__label">current zone</span>
+      <strong class="mini-hud__value">hero</strong>
+    </aside>
+
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.8/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
