@@ -421,10 +421,90 @@ function initJourneyScenes() {
   if (!window.gsap || !window.ScrollTrigger || prefersReducedMotion) return;
 
   const { gsap, ScrollTrigger } = window;
+  const scenePresets = {
+    s1: {
+      copy: { x: -90, y: 36, rotate: -4, scale: 0.92 },
+      num: { x: -34, y: 22, rotate: -10, scale: 0.74 },
+      panel: {
+        x: 132,
+        y: 62,
+        rotate: 8,
+        rotateY: -26,
+        scale: 0.8,
+        clipPath: "inset(18% 16% 20% 18% round 3rem)",
+      },
+      child: { y: 42, scale: 0.46, rotate: -10 },
+    },
+    s2: {
+      copy: { x: 92, y: 24, rotate: 3, scale: 0.9 },
+      num: { x: 36, y: 18, rotate: 12, scale: 0.72 },
+      panel: {
+        x: -148,
+        y: 20,
+        rotate: -10,
+        rotateY: 28,
+        scale: 0.78,
+        clipPath: "inset(20% 22% 14% 18% round 3rem)",
+      },
+      child: { x: -28, y: 34, scale: 0.54, rotate: 8 },
+    },
+    s3: {
+      copy: {
+        y: 92,
+        rotateX: -64,
+        transformOrigin: "top center",
+        scale: 0.92,
+      },
+      num: { y: 38, rotateX: -20, scale: 0.72 },
+      panel: {
+        y: 110,
+        rotateX: 26,
+        transformOrigin: "center top",
+        scaleY: 0.7,
+        scaleX: 0.92,
+        clipPath: "inset(0% 0% 40% 0% round 3rem)",
+      },
+      child: { y: 58, scale: 0.5, rotate: -8 },
+    },
+    s4: {
+      copy: { x: 84, y: 40, rotate: -2, scale: 0.88 },
+      num: { x: 42, y: 24, rotate: 10, scale: 0.76 },
+      panel: {
+        x: -130,
+        y: 58,
+        rotate: 11,
+        rotateY: -18,
+        scale: 0.76,
+        clipPath: "inset(16% 24% 20% 14% round 3rem)",
+      },
+      child: { x: 30, y: 46, scale: 0.56, rotate: 11 },
+    },
+    s5: {
+      copy: { x: -72, y: 70, rotate: -5, scale: 0.9 },
+      num: { x: -24, y: 36, rotate: -14, scale: 0.74 },
+      panel: {
+        x: 138,
+        y: 84,
+        rotate: -12,
+        rotateY: 24,
+        scale: 0.75,
+        clipPath: "inset(20% 18% 18% 18% round 3rem)",
+      },
+      child: { scale: 0.34, y: 0, rotate: 0 },
+    },
+  };
 
   document.querySelectorAll(".journey-scene").forEach((scene) => {
+    const preset = scenePresets[scene.id] || scenePresets.s1;
+    const sticky = scene.querySelector(".journey-scene__sticky");
     const copy = scene.querySelector(".journey-copy");
     const panel = scene.querySelector(".journey-stage__panel");
+    const num = scene.querySelector(".journey-copy__num");
+    const tag = scene.querySelector(".journey-copy__tag");
+    const title = scene.querySelector(".journey-copy__title");
+    const titleAccent = title?.querySelector("span");
+    const body = scene.querySelector(".journey-copy__body");
+    const caption = scene.querySelector(".journey-stage__caption");
     const panelChildren = [
       ...scene.querySelectorAll(
         ".energy-node, .tower, .substation-cell, .city-node, .control-wave"
@@ -432,26 +512,47 @@ function initJourneyScenes() {
     ];
     const lines = [...scene.querySelectorAll(".journey-data__row")];
     const stats = [...scene.querySelectorAll(".journey-stats > div")];
+    const isRight = scene.classList.contains("journey-scene--right");
+    const lineDirection = isRight ? 30 : -30;
+    const statsDirection = isRight ? 34 : -34;
 
-    gsap.set(
-      [
-        scene.querySelector(".journey-copy__tag"),
-        scene.querySelector(".journey-copy__title"),
-        scene.querySelector(".journey-copy__body"),
-        scene.querySelector(".journey-copy__num"),
-        scene.querySelector(".journey-stage__caption"),
-        ...lines,
-        ...stats,
-      ],
-      { opacity: 0, y: 28 }
-    );
-    gsap.set(panel, { opacity: 0, y: 56, scale: 0.96, rotateX: 6 });
-    gsap.set(panelChildren, { opacity: 0, scale: 0.82 });
+    gsap.set(copy, {
+      opacity: 0,
+      transformPerspective: 1200,
+      ...preset.copy,
+    });
+    gsap.set(num, {
+      opacity: 0,
+      ...preset.num,
+    });
+    gsap.set([tag, title, body, caption], { opacity: 0, y: 26 });
+    gsap.set(titleAccent, {
+      opacity: 0,
+      x: isRight ? 34 : -34,
+      scale: 0.88,
+    });
+    gsap.set(lines, { opacity: 0, x: lineDirection, y: 12 });
+    gsap.set(stats, {
+      opacity: 0,
+      x: statsDirection,
+      y: 22,
+      scale: 0.86,
+    });
+    gsap.set(panel, {
+      opacity: 0,
+      transformPerspective: 1400,
+      transformOrigin: "center center",
+      ...preset.panel,
+    });
+    gsap.set(panelChildren, {
+      opacity: 0,
+      ...preset.child,
+    });
 
     const reveal = gsap.timeline({
       scrollTrigger: {
-        trigger: scene,
-        start: "top 68%",
+        trigger: sticky,
+        start: "top 98%",
       },
       defaults: {
         ease: "power3.out",
@@ -459,73 +560,100 @@ function initJourneyScenes() {
     });
 
     reveal
+      .to(copy, {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        rotate: 0,
+        rotateX: 0,
+        scale: 1,
+        duration: 0.95,
+        ease: "expo.out",
+        clearProps: "transform",
+      })
       .to(panel, {
         opacity: 1,
         y: 0,
+        x: 0,
         scale: 1,
+        scaleX: 1,
+        scaleY: 1,
+        rotate: 0,
         rotateX: 0,
+        rotateY: 0,
+        clipPath: "inset(0% 0% 0% 0% round 2.8rem)",
         duration: 1,
-        clearProps: "transform",
-      })
-      .to(
-        scene.querySelector(".journey-copy__num"),
-        { opacity: 1, y: 0, duration: 0.55 },
-        0.08
-      )
-      .to(
-        [
-          scene.querySelector(".journey-copy__tag"),
-          scene.querySelector(".journey-copy__title"),
-          scene.querySelector(".journey-copy__body"),
-        ],
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          stagger: 0.08,
-        },
-        0.16
-      )
-      .to(
-        lines,
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.65,
-          stagger: 0.06,
-        },
-        0.32
-      )
-      .to(
-        stats,
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.65,
-          stagger: 0.08,
-        },
-        0.46
-      )
-      .to(
-        scene.querySelector(".journey-stage__caption"),
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-        },
-        0.54
-      )
-      .to(
-        panelChildren,
-        {
-          opacity: 1,
-          scale: 1,
-          duration: 0.8,
-          stagger: 0.08,
-          ease: "back.out(1.2)",
-        },
-        0.26
-      );
+        ease: "expo.out",
+        clearProps: "transform,clipPath",
+      }, 0.05)
+      .to(num, {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        rotate: 0,
+        rotateX: 0,
+        scale: 1,
+        duration: 0.6,
+        ease: "back.out(1.5)",
+      }, 0.1)
+      .to(tag, {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        ease: "power3.out",
+      }, 0.18)
+      .to(title, {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        ease: "expo.out",
+      }, 0.22)
+      .to(titleAccent, {
+        opacity: 1,
+        x: 0,
+        scale: 1,
+        duration: 0.62,
+        ease: "back.out(1.35)",
+      }, 0.34)
+      .to(body, {
+        opacity: 1,
+        y: 0,
+        duration: 0.65,
+        ease: "power3.out",
+      }, 0.3)
+      .to(panelChildren, {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        scale: 1,
+        rotate: 0,
+        duration: 0.8,
+        stagger: 0.07,
+        ease: "back.out(1.3)",
+      }, 0.24)
+      .to(lines, {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        duration: 0.55,
+        stagger: 0.06,
+        ease: "power2.out",
+      }, 0.42)
+      .to(stats, {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        scale: 1,
+        duration: 0.62,
+        stagger: 0.08,
+        ease: "back.out(1.1)",
+      }, 0.52)
+      .to(caption, {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        ease: "power2.out",
+      }, 0.52);
   });
 
   document.querySelectorAll(".journey-stage__panel").forEach((panel) => {
@@ -537,7 +665,7 @@ function initJourneyScenes() {
         rotate: 1.8,
         ease: "none",
         scrollTrigger: {
-          trigger: panel.closest(".journey-scene"),
+          trigger: panel.closest(".journey-scene__sticky"),
           start: "top bottom",
           end: "bottom top",
           scrub: true,
@@ -554,7 +682,7 @@ function initJourneyScenes() {
         yPercent: -10,
         ease: "none",
         scrollTrigger: {
-          trigger: copy.closest(".journey-scene"),
+          trigger: copy.closest(".journey-scene__sticky"),
           start: "top bottom",
           end: "bottom top",
           scrub: true,
@@ -701,12 +829,25 @@ function initAtlasInteractions(lenis) {
   if (window.gsap && window.ScrollTrigger && !prefersReducedMotion) {
     const { gsap } = window;
 
-    gsap.set(".atlas__intro > *", { opacity: 0, y: 36 });
-    gsap.set(["#atlas-details", ".atlas-node"], { opacity: 0, y: 24 });
+    gsap.set(".atlas__intro > *", { opacity: 0, y: 36, scale: 0.96 });
+    gsap.set("#atlas-details", {
+      opacity: 0,
+      y: 38,
+      rotateY: -18,
+      transformPerspective: 1200,
+    });
+    gsap.set(".atlas-node", {
+      opacity: 0,
+      y: 26,
+      scale: 0.62,
+      rotateZ: (_, target) =>
+        target.dataset.node === "grid" || target.dataset.node === "control" ? -6 : 6,
+    });
 
     gsap.to(".atlas__intro > *", {
       y: 0,
       opacity: 1,
+      scale: 1,
       duration: 0.9,
       stagger: 0.08,
       ease: "power3.out",
@@ -719,8 +860,9 @@ function initAtlasInteractions(lenis) {
     gsap.to("#atlas-details", {
       y: 0,
       opacity: 1,
+      rotateY: 0,
       duration: 0.9,
-      ease: "power3.out",
+      ease: "expo.out",
       scrollTrigger: {
         trigger: ".atlas-stage",
         start: "top 72%",
@@ -730,12 +872,14 @@ function initAtlasInteractions(lenis) {
     gsap.to(".atlas-node", {
       y: 0,
       opacity: 1,
-      duration: 0.8,
+      scale: 1,
+      rotateZ: 0,
+      duration: 0.85,
       stagger: {
         each: 0.04,
         from: "random",
       },
-      ease: "power3.out",
+      ease: "back.out(1.25)",
       scrollTrigger: {
         trigger: ".atlas-stage",
         start: "top 72%",
@@ -749,23 +893,52 @@ function initFinaleAnimation() {
 
   const { gsap, ScrollTrigger } = window;
 
-  gsap.set(".finale__eyebrow, .finale__title, .finale__body, .finale__actions", {
-    y: 38,
+  gsap.set(".finale__eyebrow", { opacity: 0, y: 26 });
+  gsap.set(".finale__title", {
     opacity: 0,
+    y: 46,
+    scale: 0.92,
+    rotateX: -22,
+    transformPerspective: 1200,
   });
+  gsap.set(".finale__body", { opacity: 0, y: 30 });
+  gsap.set(".finale__actions", { opacity: 0, y: 32, scale: 0.96 });
 
-  gsap.from(".finale__eyebrow, .finale__title, .finale__body, .finale__actions", {
-    y: 38,
-    opacity: 0,
-    duration: 1,
-    stagger: 0.1,
-    ease: "power3.out",
+  const tl = gsap.timeline({
     scrollTrigger: {
       trigger: ".finale",
       start: "top 72%",
       once: true,
     },
   });
+
+  tl.to(".finale__eyebrow", {
+    opacity: 1,
+    y: 0,
+    duration: 0.55,
+    ease: "power2.out",
+  })
+    .to(".finale__title", {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      rotateX: 0,
+      duration: 1,
+      ease: "expo.out",
+    }, 0.08)
+    .to(".finale__body", {
+      opacity: 1,
+      y: 0,
+      duration: 0.7,
+      ease: "power3.out",
+    }, 0.24)
+    .to(".finale__actions", {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      duration: 0.68,
+      ease: "back.out(1.1)",
+    }, 0.34);
 }
 
 async function init() {

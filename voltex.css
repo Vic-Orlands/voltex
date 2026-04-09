@@ -1473,6 +1473,16 @@ img {
   text-shadow: var(--glow-green);
 }
 
+.finale__line {
+  display: block;
+}
+
+.finale__char {
+  display: inline-block;
+  transform-origin: top center;
+  will-change: transform, opacity;
+}
+
 .finale__body {
   margin-inline: auto;
 }
