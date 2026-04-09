@@ -4,8 +4,6 @@ import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-let hasInitialized = false;
-
 const atlasContent = {
   grid: {
     kicker: "Grid intelligence / 01",
@@ -137,6 +135,8 @@ const loaderSteps = [
   "VOLTEX systems online",
 ];
 
+const LOADER_STORAGE_KEY = "voltex-loader-seen";
+
 function buildStatsMarkup(items) {
   return items
     .map(
@@ -147,8 +147,7 @@ function buildStatsMarkup(items) {
 }
 
 export function initVoltex() {
-  if (hasInitialized || typeof window === "undefined") return;
-  hasInitialized = true;
+  if (typeof window === "undefined") return () => {};
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -205,16 +204,110 @@ export function initVoltex() {
     !atlasStats ||
     !atlasQuote
   ) {
-    return;
+    return () => {};
   }
 
-  function initMenu(lenis) {
+  let isDisposed = false;
+  let lenis = null;
+  let dotObserver = null;
+  let fieldCanvasAnimationFrame = 0;
+  let cursorAnimationFrame = 0;
+  let lenisAnimationFrame = 0;
+  let loaderResolveTimeout = 0;
+  let loaderFadeTimeout = 0;
+  let loaderTickTimeout = 0;
+
+  const cleanupFns = [];
+  const finalCleanupFns = [];
+  const gsapContext = gsap.context(() => {}, document.body);
+
+  const addListener = (target, event, handler, options) => {
+    target.addEventListener(event, handler, options);
+    cleanupFns.push(() => target.removeEventListener(event, handler, options));
+  };
+
+  const addFinalCleanup = (fn) => {
+    finalCleanupFns.push(fn);
+    return fn;
+  };
+
+  const setSafeTimeout = (callback, delay) => {
+    const id = window.setTimeout(() => {
+      if (!isDisposed) callback();
+    }, delay);
+    cleanupFns.push(() => window.clearTimeout(id));
+    return id;
+  };
+
+  const setSafeInterval = (callback, delay) => {
+    const id = window.setInterval(() => {
+      if (!isDisposed) callback();
+    }, delay);
+    cleanupFns.push(() => window.clearInterval(id));
+    return id;
+  };
+
+  const updateProgress = () => {
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+    progressFill.style.width = `${progress}%`;
+  };
+
+  const setActiveDot = (id) => {
+    dotRailButtons.forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.target === id);
+    });
+  };
+
+  const applyAtlasNode = (key, withAnimation = true) => {
+    const content = atlasContent[key];
+    const node = atlasNodes.find((item) => item.dataset.node === key);
+    if (!content || !node) return;
+
+    atlasNodes.forEach((item) => item.classList.toggle("is-active", item === node));
+    atlasStage.classList.add("is-zoomed");
+
+    const nodeX = Number.parseFloat(node.style.getPropertyValue("--x")) / 100;
+    const nodeY = Number.parseFloat(node.style.getPropertyValue("--y")) / 100;
+    const stageWidth = atlasFrame.clientWidth;
+    const stageHeight = atlasFrame.clientHeight;
+    const scale =
+      window.innerWidth > 1100 ? 1.62 : window.innerWidth > 720 ? 1.34 : 1.12;
+    const translateX = (0.5 - nodeX) * stageWidth * 0.96;
+    const translateY = (0.42 - nodeY) * stageHeight * 0.86;
+
+    if (withAnimation && !prefersReducedMotion) {
+      gsap.to(atlasNetwork, {
+        x: translateX,
+        y: translateY,
+        scale,
+        duration: 0.75,
+        ease: "power3.out",
+      });
+
+      gsap.fromTo(
+        "#atlas-details",
+        { opacity: 0.55, y: 18 },
+        { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }
+      );
+    } else {
+      atlasNetwork.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    atlasKicker.textContent = content.kicker;
+    atlasTitle.textContent = content.title;
+    atlasCopy.textContent = content.copy;
+    atlasStats.innerHTML = buildStatsMarkup(content.stats);
+    atlasQuote.textContent = `“${content.quote}”`;
+  };
+
+  const initMenu = () => {
     const openMenu = () => {
       body.classList.add("is-menu-open");
       navMenu.classList.add("is-open");
       navMenu.setAttribute("aria-hidden", "false");
       navMenuToggle.setAttribute("aria-expanded", "true");
-      if (lenis) lenis.stop();
+      lenis?.stop();
     };
 
     const closeMenu = () => {
@@ -222,61 +315,23 @@ export function initVoltex() {
       navMenu.classList.remove("is-open");
       navMenu.setAttribute("aria-hidden", "true");
       navMenuToggle.setAttribute("aria-expanded", "false");
-      if (lenis) lenis.start();
+      lenis?.start();
     };
 
-    navMenuToggle.addEventListener("click", openMenu);
-    navMenuClose.addEventListener("click", closeMenu);
-    navMenuBackdrop?.addEventListener("click", closeMenu);
-    navMenuLinks.forEach((link) => link.addEventListener("click", closeMenu));
-
-    window.addEventListener("keydown", (event) => {
+    addListener(navMenuToggle, "click", openMenu);
+    addListener(navMenuClose, "click", closeMenu);
+    if (navMenuBackdrop) addListener(navMenuBackdrop, "click", closeMenu);
+    navMenuLinks.forEach((link) => addListener(link, "click", closeMenu));
+    addListener(window, "keydown", (event) => {
       if (event.key === "Escape" && navMenu.classList.contains("is-open")) {
         closeMenu();
       }
     });
-  }
 
-  function runLoader() {
-    return new Promise((resolve) => {
-      let progress = 0;
-      let statusIndex = 0;
+    addFinalCleanup(closeMenu);
+  };
 
-      const tick = () => {
-        progress += Math.random() * 16 + 6;
-        if (progress > 100) progress = 100;
-
-        loaderFill.style.width = `${progress}%`;
-        loaderPct.textContent = `${Math.round(progress)}%`;
-
-        const nextStatusIndex = Math.min(
-          loaderSteps.length - 1,
-          Math.floor((progress / 100) * loaderSteps.length)
-        );
-
-        if (nextStatusIndex !== statusIndex) {
-          statusIndex = nextStatusIndex;
-          loaderStatus.textContent = loaderSteps[statusIndex];
-        }
-
-        if (progress < 100) {
-          window.setTimeout(tick, 220);
-        } else {
-          window.setTimeout(() => {
-            body.classList.add("is-ready");
-            window.setTimeout(() => {
-              loader.remove();
-              resolve();
-            }, 720);
-          }, 300);
-        }
-      };
-
-      tick();
-    });
-  }
-
-  function initCursor() {
+  const initCursor = () => {
     if (
       prefersReducedMotion ||
       !window.matchMedia("(pointer: fine)").matches
@@ -289,7 +344,7 @@ export function initVoltex() {
     let ringX = mouseX;
     let ringY = mouseY;
 
-    window.addEventListener("pointermove", (event) => {
+    addListener(window, "pointermove", (event) => {
       mouseX = event.clientX;
       mouseY = event.clientY;
       cursorDot.style.left = `${mouseX}px`;
@@ -297,17 +352,19 @@ export function initVoltex() {
     });
 
     const render = () => {
+      if (isDisposed) return;
       ringX += (mouseX - ringX) * 0.14;
       ringY += (mouseY - ringY) * 0.14;
       cursorRing.style.left = `${ringX}px`;
       cursorRing.style.top = `${ringY}px`;
-      window.requestAnimationFrame(render);
+      cursorAnimationFrame = window.requestAnimationFrame(render);
     };
 
-    window.requestAnimationFrame(render);
-  }
+    cursorAnimationFrame = window.requestAnimationFrame(render);
+    cleanupFns.push(() => window.cancelAnimationFrame(cursorAnimationFrame));
+  };
 
-  function initFieldCanvas() {
+  const initFieldCanvas = () => {
     const canvas = document.getElementById("field-canvas");
     if (!canvas) return;
 
@@ -315,7 +372,6 @@ export function initVoltex() {
     if (!context) return;
 
     const nodes = [];
-    const links = [];
     let width = 0;
     let height = 0;
     let pointerX = window.innerWidth * 0.6;
@@ -339,8 +395,6 @@ export function initVoltex() {
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
 
       nodes.length = 0;
-      links.length = 0;
-
       const total = Math.max(80, Math.round(width / 18));
       for (let index = 0; index < total; index += 1) {
         nodes.push({
@@ -354,15 +408,16 @@ export function initVoltex() {
       }
     };
 
-    window.addEventListener("resize", resize);
-    window.addEventListener("pointermove", (event) => {
+    addListener(window, "resize", resize);
+    addListener(window, "pointermove", (event) => {
       pointerX = event.clientX;
       pointerY = event.clientY;
     });
 
     const draw = () => {
-      context.clearRect(0, 0, width, height);
+      if (isDisposed) return;
 
+      context.clearRect(0, 0, width, height);
       nodes.forEach((node, index) => {
         node.x += node.vx;
         node.y += node.vy;
@@ -396,57 +451,59 @@ export function initVoltex() {
         context.stroke();
       });
 
-      window.requestAnimationFrame(draw);
+      fieldCanvasAnimationFrame = window.requestAnimationFrame(draw);
     };
 
     resize();
     draw();
-  }
+    cleanupFns.push(() => window.cancelAnimationFrame(fieldCanvasAnimationFrame));
+  };
 
-  function initLenis() {
-    if (prefersReducedMotion) return null;
+  const initLenis = () => {
+    if (prefersReducedMotion) return;
 
-    const lenis = new Lenis({
+    lenis = new Lenis({
       duration: 1.18,
       wheelMultiplier: 0.94,
       touchMultiplier: 1.16,
     });
 
     const raf = (time) => {
+      if (isDisposed || !lenis) return;
       lenis.raf(time);
-      window.requestAnimationFrame(raf);
+      lenisAnimationFrame = window.requestAnimationFrame(raf);
     };
 
-    window.requestAnimationFrame(raf);
-    return lenis;
-  }
-
-  function updateProgress() {
-    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
-    progressFill.style.width = `${progress}%`;
-  }
-
-  function setActiveDot(id) {
-    dotRailButtons.forEach((button) => {
-      button.classList.toggle("is-active", button.dataset.target === id);
+    lenis.on("scroll", () => {
+      updateProgress();
+      ScrollTrigger.update();
     });
-  }
 
-  function initDotNavigation(lenis) {
+    lenisAnimationFrame = window.requestAnimationFrame(raf);
+    cleanupFns.push(() => window.cancelAnimationFrame(lenisAnimationFrame));
+    cleanupFns.push(() => {
+      lenis?.destroy();
+      lenis = null;
+    });
+  };
+
+  const initDotNavigation = () => {
+    const scrollToTarget = (target, offset = -20) => {
+      if (lenis) {
+        lenis.scrollTo(target, { offset });
+      } else {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+
     dotRailButtons.forEach((button) => {
-      button.addEventListener("click", () => {
+      addListener(button, "click", () => {
         const target = document.getElementById(button.dataset.target);
-        if (!target) return;
-        if (lenis) {
-          lenis.scrollTo(target, { offset: -20 });
-        } else {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+        if (target) scrollToTarget(target);
       });
     });
 
-    const observer = new window.IntersectionObserver(
+    dotObserver = new window.IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) setActiveDot(entry.target.id);
@@ -455,10 +512,13 @@ export function initVoltex() {
       { threshold: 0.45 }
     );
 
-    sections.forEach((section) => observer.observe(section));
-  }
+    sections.forEach((section) => dotObserver?.observe(section));
+    cleanupFns.push(() => dotObserver?.disconnect());
+  };
 
-  function initHeroAnimations() {
+  const initHeroAnimations = () => {
+    gsap.set(".hero__body, .hero__actions", { y: 18, opacity: 0 });
+
     gsap.to(heroLineInner, {
       y: "0%",
       duration: 1.3,
@@ -495,8 +555,6 @@ export function initVoltex() {
       ease: "power2.out",
     });
 
-    gsap.set(".hero__body, .hero__actions", { y: 18, opacity: 0 });
-
     if (!prefersReducedMotion) {
       gsap.to(".orbital-core", {
         rotate: 32,
@@ -511,9 +569,9 @@ export function initVoltex() {
         },
       });
     }
-  }
+  };
 
-  function initJourneyScenes() {
+  const initJourneyScenes = () => {
     if (prefersReducedMotion) return;
 
     const scenePresets = {
@@ -703,45 +761,16 @@ export function initVoltex() {
           },
           0.1
         )
-        .to(
-          tag,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.55,
-            ease: "power3.out",
-          },
-          0.18
-        )
-        .to(
-          title,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            ease: "expo.out",
-          },
-          0.22
-        )
+        .to(tag, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 0.18)
+        .to(title, { opacity: 1, y: 0, duration: 0.7, ease: "expo.out" }, 0.22)
         .to(
           titleAccent,
-          {
-            opacity: 1,
-            x: 0,
-            scale: 1,
-            duration: 0.62,
-            ease: "back.out(1.35)",
-          },
+          { opacity: 1, x: 0, scale: 1, duration: 0.62, ease: "back.out(1.35)" },
           0.34
         )
         .to(
           sceneBody,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.65,
-            ease: "power3.out",
-          },
+          { opacity: 1, y: 0, duration: 0.65, ease: "power3.out" },
           0.3
         )
         .to(
@@ -785,12 +814,7 @@ export function initVoltex() {
         )
         .to(
           caption,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.5,
-            ease: "power2.out",
-          },
+          { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
           0.52
         );
     });
@@ -848,9 +872,9 @@ export function initVoltex() {
       stagger: 0.5,
       ease: "sine.inOut",
     });
-  }
+  };
 
-  function initDividerAnimations() {
+  const initDividerAnimations = () => {
     if (prefersReducedMotion) return;
 
     document.querySelectorAll(".divider").forEach((divider) => {
@@ -883,64 +907,26 @@ export function initVoltex() {
         0.16
       );
     });
-  }
+  };
 
-  function applyAtlasNode(key, withAnimation = true) {
-    const content = atlasContent[key];
-    const node = atlasNodes.find((item) => item.dataset.node === key);
-    if (!content || !node) return;
+  const initAtlasInteractions = () => {
+    const scrollToTarget = (target) => {
+      if (lenis) {
+        lenis.scrollTo(target, { offset: -60 });
+      } else {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
 
-    atlasNodes.forEach((item) => item.classList.toggle("is-active", item === node));
-    atlasStage.classList.add("is-zoomed");
-
-    const nodeX = Number.parseFloat(node.style.getPropertyValue("--x")) / 100;
-    const nodeY = Number.parseFloat(node.style.getPropertyValue("--y")) / 100;
-    const stageWidth = atlasFrame.clientWidth;
-    const stageHeight = atlasFrame.clientHeight;
-    const scale =
-      window.innerWidth > 1100 ? 1.62 : window.innerWidth > 720 ? 1.34 : 1.12;
-    const translateX = (0.5 - nodeX) * stageWidth * 0.96;
-    const translateY = (0.42 - nodeY) * stageHeight * 0.86;
-
-    if (withAnimation && !prefersReducedMotion) {
-      gsap.to(atlasNetwork, {
-        x: translateX,
-        y: translateY,
-        scale,
-        duration: 0.75,
-        ease: "power3.out",
-      });
-
-      gsap.fromTo(
-        "#atlas-details",
-        { opacity: 0.55, y: 18 },
-        { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }
-      );
-    } else {
-      atlasNetwork.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-    }
-
-    atlasKicker.textContent = content.kicker;
-    atlasTitle.textContent = content.title;
-    atlasCopy.textContent = content.copy;
-    atlasStats.innerHTML = buildStatsMarkup(content.stats);
-    atlasQuote.textContent = `“${content.quote}”`;
-  }
-
-  function initAtlasInteractions(lenis) {
     applyAtlasNode("grid", false);
 
     atlasNodes.forEach((node) => {
-      node.addEventListener("click", () => {
+      addListener(node, "click", () => {
         applyAtlasNode(node.dataset.node, true);
-        if (lenis) {
-          lenis.scrollTo(atlasShell, { offset: -60 });
-        } else {
-          atlasShell.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+        scrollToTarget(atlasShell);
       });
 
-      node.addEventListener("pointermove", (event) => {
+      addListener(node, "pointermove", (event) => {
         if (prefersReducedMotion) return;
         const rect = node.getBoundingClientRect();
         const px = (event.clientX - rect.left) / rect.width - 0.5;
@@ -949,7 +935,7 @@ export function initVoltex() {
         node.style.setProperty("--ry", `${px * 18}deg`);
       });
 
-      node.addEventListener("pointerleave", () => {
+      addListener(node, "pointerleave", () => {
         node.style.removeProperty("--rx");
         node.style.removeProperty("--ry");
       });
@@ -1013,9 +999,9 @@ export function initVoltex() {
         start: "top 72%",
       },
     });
-  }
+  };
 
-  function initFinaleAnimation() {
+  const initFinaleAnimation = () => {
     gsap.set(".finale__eyebrow", { opacity: 0, y: 26 });
     gsap.set(".finale__title", {
       opacity: 0,
@@ -1028,13 +1014,11 @@ export function initVoltex() {
     gsap.set(".finale__actions", { opacity: 0, y: 32, scale: 0.96 });
 
     let hasPlayed = false;
-
     const play = () => {
-      if (hasPlayed) return;
+      if (hasPlayed || isDisposed) return;
       hasPlayed = true;
 
       const tl = gsap.timeline();
-
       tl.to(".finale__eyebrow", {
         opacity: 1,
         y: 0,
@@ -1055,61 +1039,120 @@ export function initVoltex() {
         )
         .to(
           ".finale__body",
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            ease: "power3.out",
-          },
+          { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
           0.24
         )
         .to(
           ".finale__actions",
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.68,
-            ease: "back.out(1.1)",
-          },
+          { opacity: 1, y: 0, scale: 1, duration: 0.68, ease: "back.out(1.1)" },
           0.34
         );
     };
 
-    window.addEventListener("voltex:finale-reveal", play, { once: true });
-  }
+    addListener(window, "voltex:finale-reveal", play, { once: true });
+  };
 
-  async function init() {
+  const runLoader = () =>
+    new Promise((resolve) => {
+      let hasSeenLoader = false;
+
+      try {
+        hasSeenLoader = window.localStorage.getItem(LOADER_STORAGE_KEY) === "1";
+      } catch (error) {}
+
+      if (hasSeenLoader) {
+        body.classList.add("is-ready");
+        loader.remove();
+        resolve();
+        return;
+      }
+
+      let progress = 0;
+      let statusIndex = 0;
+
+      const tick = () => {
+        if (isDisposed) return;
+
+        progress += Math.random() * 16 + 6;
+        if (progress > 100) progress = 100;
+
+        loaderFill.style.width = `${progress}%`;
+        loaderPct.textContent = `${Math.round(progress)}%`;
+
+        const nextStatusIndex = Math.min(
+          loaderSteps.length - 1,
+          Math.floor((progress / 100) * loaderSteps.length)
+        );
+
+        if (nextStatusIndex !== statusIndex) {
+          statusIndex = nextStatusIndex;
+          loaderStatus.textContent = loaderSteps[statusIndex];
+        }
+
+        if (progress < 100) {
+          loaderTickTimeout = setSafeTimeout(tick, 220);
+        } else {
+          loaderResolveTimeout = setSafeTimeout(() => {
+            body.classList.add("is-ready");
+            try {
+              window.localStorage.setItem(LOADER_STORAGE_KEY, "1");
+            } catch (error) {}
+            loaderFadeTimeout = setSafeTimeout(() => {
+              loader.remove();
+              resolve();
+            }, 720);
+          }, 300);
+        }
+      };
+
+      tick();
+    });
+
+  const resizeAtlas = () => {
+    const activeNode = document.querySelector(".atlas-node.is-active");
+    if (activeNode) applyAtlasNode(activeNode.dataset.node, false);
+  };
+
+  const init = async () => {
     initCursor();
     initFieldCanvas();
+    initLenis();
+    initMenu();
 
-    const lenis = initLenis();
-    initMenu(lenis);
-    const scrollHandler = () => updateProgress();
-
-    if (lenis) {
-      lenis.on("scroll", () => {
-        updateProgress();
-        ScrollTrigger.update();
-      });
-    } else {
-      window.addEventListener("scroll", scrollHandler, { passive: true });
+    if (!lenis) {
+      addListener(window, "scroll", updateProgress, { passive: true });
     }
 
-    initDotNavigation(lenis);
+    initDotNavigation();
     await runLoader();
+    if (isDisposed) return;
+
     initHeroAnimations();
     initJourneyScenes();
     initDividerAnimations();
-    initAtlasInteractions(lenis);
+    initAtlasInteractions();
     initFinaleAnimation();
     updateProgress();
 
-    window.addEventListener("resize", () => {
-      const activeNode = document.querySelector(".atlas-node.is-active");
-      if (activeNode) applyAtlasNode(activeNode.dataset.node, false);
-    });
-  }
+    addListener(window, "resize", resizeAtlas);
+  };
 
   init();
+
+  return () => {
+    isDisposed = true;
+    window.clearTimeout(loaderTickTimeout);
+    window.clearTimeout(loaderResolveTimeout);
+    window.clearTimeout(loaderFadeTimeout);
+    window.cancelAnimationFrame(fieldCanvasAnimationFrame);
+    window.cancelAnimationFrame(cursorAnimationFrame);
+    window.cancelAnimationFrame(lenisAnimationFrame);
+    dotObserver?.disconnect();
+    lenis?.destroy();
+    ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    gsap.killTweensOf("*");
+    gsapContext.revert();
+    finalCleanupFns.forEach((fn) => fn());
+    cleanupFns.forEach((fn) => fn());
+  };
 }

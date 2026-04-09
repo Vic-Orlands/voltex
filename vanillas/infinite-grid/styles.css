@@ -1,0 +1,54 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow: hidden;
+}
+
+#viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  cursor: grab;
+}
+
+#viewport.grabbing {
+  cursor: grabbing;
+}
+
+#container {
+  position: absolute;
+  inset: -10vmin;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+#grid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.grid-item {
+  position: absolute;
+  padding: 25px;
+  box-sizing: border-box;
+  overflow: hidden;
+  will-change: transform;
+  user-select: none;
+  backface-visibility: hidden;
+}
+
+.grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}

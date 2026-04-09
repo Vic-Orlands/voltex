@@ -1638,6 +1638,11 @@ body.is-atlas-modal-open {
   backface-visibility: hidden;
   transition: transform 420ms var(--ease-out);
   will-change: transform;
+  z-index: 1;
+}
+
+.atlas-explorer__page.is-active {
+  z-index: 2;
 }
 
 .atlas-explorer__surface {

@@ -1,33 +1,78 @@
-import fs from "node:fs";
-import path from "node:path";
+"use client";
+
+import { useEffect, useState } from "react";
+import VoltexPage from "../components/VoltexPage";
 import PageContentSwitcher from "./page-content-switcher";
 import VoltexBoot from "./voltex-boot";
 import FinaleScenePortal from "./finale-scene-portal";
 
-function getVoltexBodyMarkup() {
-  const html = fs.readFileSync(path.join(process.cwd(), "voltex.html"), "utf8");
-  const bodyStart = html.indexOf("<body>");
-  const scriptStart = html.indexOf(
-    '<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>'
-  );
-
-  if (bodyStart === -1 || scriptStart === -1) {
-    throw new Error("Unable to extract VOLTEX body markup from voltex.html");
-  }
-
-  return html.slice(bodyStart + "<body>".length, scriptStart).trim();
-}
+const STORAGE_KEY = "voltex-active-page";
 
 export default function Page() {
+  const [activePage, setActivePage] = useState("main");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const storedPage = window.localStorage.getItem(STORAGE_KEY);
+    if (storedPage === "dummy") {
+      setActivePage("dummy");
+    }
+  }, []);
+
+  useEffect(() => {
+    const isDummyPage = activePage === "dummy";
+    document.body.classList.toggle("is-dummy-page-active", isDummyPage);
+    window.localStorage.setItem(STORAGE_KEY, activePage);
+
+    return () => {
+      document.body.classList.remove("is-dummy-page-active");
+    };
+  }, [activePage]);
+
+  useEffect(() => {
+    document.body.classList.toggle("is-atlas-modal-open", isModalOpen);
+
+    return () => {
+      document.body.classList.remove("is-atlas-modal-open");
+    };
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setIsModalOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
   return (
     <>
-      <div
-        style={{ display: "contents" }}
-        dangerouslySetInnerHTML={{ __html: getVoltexBodyMarkup() }}
+      <VoltexPage
+        isAtlasSwitcherOpen={isModalOpen}
+        onOpenAtlasSwitcher={() => setIsModalOpen(true)}
       />
       <VoltexBoot />
       <FinaleScenePortal />
-      <PageContentSwitcher />
+      <PageContentSwitcher
+        activePage={activePage}
+        isModalOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelectPage={(page) => {
+          setActivePage(page);
+          setIsModalOpen(false);
+        }}
+        onTogglePage={() =>
+          setActivePage((currentPage) =>
+            currentPage === "dummy" ? "main" : "dummy",
+          )
+        }
+      />
     </>
   );
 }

@@ -1,75 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import DummyPage from "../components/DummyPage";
 
-const STORAGE_KEY = "voltex-active-page";
-
-export default function PageContentSwitcher() {
-  const [activePage, setActivePage] = useState("main");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    const storedPage = window.localStorage.getItem(STORAGE_KEY);
-    if (storedPage === "dummy") {
-      setActivePage("dummy");
-    }
-  }, []);
-
-  useEffect(() => {
-    const atlasLaunchArrow = document.getElementById("atlas-launch-arrow");
-    if (!atlasLaunchArrow) return undefined;
-
-    const openModal = () => {
-      setIsModalOpen(true);
-    };
-
-    atlasLaunchArrow.addEventListener("click", openModal);
-
-    return () => {
-      atlasLaunchArrow.removeEventListener("click", openModal);
-    };
-  }, []);
-
-  useEffect(() => {
-    const isDummyPage = activePage === "dummy";
-    document.body.classList.toggle("is-dummy-page-active", isDummyPage);
-    window.localStorage.setItem(STORAGE_KEY, activePage);
-
-    return () => {
-      document.body.classList.remove("is-dummy-page-active");
-    };
-  }, [activePage]);
-
-  useEffect(() => {
-    document.body.classList.toggle("is-atlas-modal-open", isModalOpen);
-    const atlasLaunchArrow = document.getElementById("atlas-launch-arrow");
-    atlasLaunchArrow?.setAttribute("aria-expanded", isModalOpen ? "true" : "false");
-
-    return () => {
-      document.body.classList.remove("is-atlas-modal-open");
-      atlasLaunchArrow?.setAttribute("aria-expanded", "false");
-    };
-  }, [isModalOpen]);
-
-  useEffect(() => {
-    const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        setIsModalOpen(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleEscape);
-
-    return () => {
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, []);
-
+export default function PageContentSwitcher({
+  activePage,
+  isModalOpen,
+  onClose,
+  onSelectPage,
+  onTogglePage,
+}) {
   return (
     <>
       <div className={`dummy-page-switcher${activePage === "dummy" ? " is-active" : ""}`}>
-        <DummyPage onBack={() => setActivePage("main")} />
+        <DummyPage onBack={() => onSelectPage("main")} />
       </div>
 
       <div
@@ -79,7 +22,7 @@ export default function PageContentSwitcher() {
       >
         <div
           className="atlas-explorer__backdrop"
-          onClick={() => setIsModalOpen(false)}
+          onClick={onClose}
         ></div>
         <div
           className="atlas-explorer__panel"
@@ -90,7 +33,7 @@ export default function PageContentSwitcher() {
           <button
             className="atlas-explorer__close"
             type="button"
-            onClick={() => setIsModalOpen(false)}
+            onClick={onClose}
             aria-label="Close atlas explorer"
           >
             <span></span>
@@ -128,10 +71,7 @@ export default function PageContentSwitcher() {
                   <button
                     className="hero__btn hero__btn--solid"
                     type="button"
-                    onClick={() => {
-                      setActivePage("main");
-                      setIsModalOpen(false);
-                    }}
+                    onClick={() => onSelectPage("main")}
                   >
                     Use landing page
                   </button>
@@ -170,10 +110,7 @@ export default function PageContentSwitcher() {
                   <button
                     className="hero__btn hero__btn--solid"
                     type="button"
-                    onClick={() => {
-                      setActivePage("dummy");
-                      setIsModalOpen(false);
-                    }}
+                    onClick={() => onSelectPage("dummy")}
                   >
                     Use advanced preview
                   </button>
@@ -189,11 +126,7 @@ export default function PageContentSwitcher() {
                 ? "Show landing page option"
                 : "Show advanced preview option"
             }
-            onClick={() =>
-              setActivePage((currentPage) =>
-                currentPage === "dummy" ? "main" : "dummy"
-              )
-            }
+            onClick={onTogglePage}
           ></button>
         </div>
       </div>
