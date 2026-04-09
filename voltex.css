@@ -673,6 +673,10 @@ body.is-menu-open {
   text-wrap: pretty;
 }
 
+.finale__body {
+  color: white;
+}
+
 .hero__actions {
   display: flex;
   flex-wrap: wrap;
@@ -1065,11 +1069,7 @@ body.is-menu-open {
   color: rgba(181, 255, 210, 0.5);
 }
 
-.journey-stage__grid,
-.journey-stage__lines,
-.substation-grid,
-.city-grid,
-.control-map {
+.journey-stage__grid {
   position: absolute;
   inset: 0;
 }
@@ -1082,9 +1082,7 @@ body.is-menu-open {
   mask-image: radial-gradient(circle at center, black 34%, transparent 90%);
 }
 
-.energy-node,
-.substation-cell,
-.city-node {
+.energy-node {
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(
@@ -1167,174 +1165,55 @@ body.is-menu-open {
     );
 }
 
-.journey-stage__lines {
-  background:
-    linear-gradient(
-      transparent 0 28%,
-      rgba(129, 255, 174, 0.22) 28% 28.2%,
-      transparent 28.2%
-    ),
-    linear-gradient(
-      transparent 0 42%,
-      rgba(129, 255, 174, 0.22) 42% 42.2%,
-      transparent 42.2%
-    ),
-    linear-gradient(
-      transparent 0 55%,
-      rgba(129, 255, 174, 0.22) 55% 55.2%,
-      transparent 55.2%
-    );
-}
-
-.tower {
+.journey-stage__panel--substation > img,
+.journey-stage__panel--control > img,
+.journey-stage__panel--lines > img,
+.journey-stage__panel--urban > img {
   position: absolute;
-  width: 9rem;
-  height: 17rem;
-  left: 26%;
-  bottom: 20%;
-  clip-path: polygon(
-    48% 0,
-    53% 0,
-    68% 100%,
-    62% 100%,
-    56% 74%,
-    44% 74%,
-    38% 100%,
-    32% 100%
-  );
-  background: linear-gradient(
-    180deg,
-    rgba(181, 255, 210, 0.5),
-    rgba(181, 255, 210, 0.08)
-  );
-  filter: drop-shadow(0 0 18px rgba(129, 255, 174, 0.18));
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.28) saturate(0.62) contrast(1.06);
 }
 
-.tower::before,
-.tower::after {
+.journey-stage__panel--substation::before,
+.journey-stage__panel--control::before,
+.journey-stage__panel--lines::before,
+.journey-stage__panel--urban::before {
   content: "";
   position: absolute;
-  left: -2rem;
-  right: -2rem;
-  height: 1px;
-  background: rgba(181, 255, 210, 0.32);
-}
-
-.tower::before {
-  top: 26%;
-}
-
-.tower::after {
-  top: 52%;
-}
-
-.tower--rear {
-  left: auto;
-  right: 16%;
-  height: 14rem;
-  opacity: 0.7;
-}
-
-.substation-grid {
-  background-image:
-    linear-gradient(rgba(181, 255, 210, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(181, 255, 210, 0.07) 1px, transparent 1px);
-  background-size: 3rem 3rem;
-}
-
-.substation-cell {
-  border-radius: var(--radius-md);
+  inset: 0;
   background:
-    linear-gradient(180deg, rgba(181, 255, 210, 0.25), rgba(7, 24, 17, 0.15)),
-    rgba(8, 27, 19, 0.6);
+    linear-gradient(180deg, rgba(4, 17, 12, 0.34), rgba(4, 17, 12, 0.42)),
+    linear-gradient(0deg, rgba(4, 17, 12, 0.9) 0%, rgba(4, 17, 12, 0.2) 38%);
+  pointer-events: none;
+}
+
+.journey-stage__panel--substation .journey-stage__caption,
+.journey-stage__panel--control .journey-stage__caption,
+.journey-stage__panel--lines .journey-stage__caption,
+.journey-stage__panel--urban .journey-stage__caption {
+  z-index: 2;
+  padding: 1rem 1.1rem;
+  border-radius: calc(var(--radius-md) + 0.2rem);
+  color: rgba(243, 245, 239, 0.94);
+  background: linear-gradient(
+    180deg,
+    rgba(4, 17, 12, 0.62),
+    rgba(4, 17, 12, 0.94)
+  );
+  border: 1px solid rgba(129, 255, 174, 0.12);
   box-shadow:
-    inset 0 0 0 1px rgba(181, 255, 210, 0.12),
-    0 0 32px rgba(129, 255, 174, 0.08);
-}
-
-.substation-cell:nth-of-type(2) {
-  width: 14rem;
-  height: 10rem;
-  top: 20%;
-  left: 18%;
-}
-
-.substation-cell--b {
-  width: 12rem;
-  height: 8rem;
-  top: 42%;
-  right: 16%;
-}
-
-.substation-cell--c {
-  width: 10rem;
-  height: 6rem;
-  left: 34%;
-  bottom: 18%;
-}
-
-.journey-stage__panel--urban::before {
-  background:
-    radial-gradient(
-      circle at 64% 40%,
-      rgba(223, 255, 88, 0.16),
-      transparent 20%
-    ),
-    linear-gradient(135deg, rgba(129, 255, 174, 0.07), transparent 44%);
-}
-
-.city-grid {
-  background-image:
-    linear-gradient(rgba(181, 255, 210, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(181, 255, 210, 0.05) 1px, transparent 1px);
-  background-size: 4rem 4rem;
-}
-
-.city-node {
-  width: 7rem;
-  height: 7rem;
-  top: 24%;
-  left: 22%;
-}
-
-.city-node--b {
-  width: 4rem;
-  height: 4rem;
-  top: 56%;
-  left: 50%;
-}
-
-.city-node--c {
-  width: 9rem;
-  height: 9rem;
-  right: 14%;
-  bottom: 20%;
+    0 10px 30px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(223, 255, 88, 0.03);
+  backdrop-filter: blur(10px);
 }
 
 .journey-stage__panel--control::before {
   background:
     linear-gradient(180deg, rgba(223, 255, 88, 0.05), transparent 30%),
     radial-gradient(circle at center, rgba(129, 255, 174, 0.1), transparent 34%);
-}
-
-.control-map {
-  background-image:
-    linear-gradient(rgba(181, 255, 210, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(181, 255, 210, 0.05) 1px, transparent 1px);
-  background-size: 5rem 5rem;
-}
-
-.control-wave {
-  position: absolute;
-  inset: 18% 22%;
-  border-radius: 50%;
-  border: 1px solid rgba(129, 255, 174, 0.15);
-  transform: scale(0.8);
-}
-
-.control-wave--b {
-  inset: 30% 33%;
-  border-color: rgba(223, 255, 88, 0.16);
 }
 
 .divider {
@@ -1507,7 +1386,7 @@ body.is-menu-open {
   position: absolute;
   inset: -0.5rem;
   border-radius: calc(var(--radius-md) + 0.5rem);
-  border: 1px solid rgba(129, 255, 173, 0.626);
+  border: 1px solid rgba(129, 255, 173, 0.72);
   background: rgba(7, 24, 17, 0.35);
   backdrop-filter: blur(8px);
 }
@@ -1611,7 +1490,7 @@ body.is-menu-open {
       rgba(223, 255, 88, 0.12),
       transparent 24%
     ),
-    linear-gradient(180deg, rgba(4, 17, 12, 0.1), rgba(4, 17, 12, 0.72));
+    linear-gradient(180deg, rgba(4, 17, 12, 0.167), rgba(4, 17, 12, 0.903));
   opacity: 0;
   transition: opacity 700ms var(--ease-out);
 }
