@@ -30,9 +30,6 @@
     </div>
 
     <canvas class="field-canvas" id="field-canvas" aria-hidden="true"></canvas>
-    <div class="bg-core" aria-hidden="true"></div>
-    <div class="bg-grid" aria-hidden="true"></div>
-    <div class="bg-vignette" aria-hidden="true"></div>
     <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
     <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
 
@@ -86,26 +83,49 @@
         <a href="#atlas">Atlas</a>
         <a href="#finale">Delivery</a>
       </nav>
-      <div class="nav__status">
-        <span class="nav__dot"></span>
-        <span> 440KV GRID LIVE </span>
-        <span id="nav-time">00:00:00</span>
-      </div>
+      <button
+        class="nav__menu-toggle"
+        id="nav-menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+        aria-label="Open menu"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </header>
 
-    <aside class="hud hud--left">
-      FREQ: 50.00 HZ<br />
-      BULK VOLT: 440,000 V<br />
-      GRID SPAN: 800 KM<br />
-      STATUS: NOMINAL
-    </aside>
-
-    <aside class="hud hud--right">
-      LAT: 6.5244° N<br />
-      LON: 3.3792° E<br />
-      NODE: NCC-LAG-01<br />
-      MODE: TRANSMIT
-    </aside>
+    <div class="nav-menu" id="nav-menu" aria-hidden="true">
+      <div class="nav-menu__backdrop" data-menu-close></div>
+      <div
+        class="nav-menu__panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+      >
+        <button
+          class="nav-menu__close"
+          id="nav-menu-close"
+          type="button"
+          aria-label="Close menu"
+        >
+          <span></span>
+          <span></span>
+        </button>
+        <div class="nav-menu__meta">
+          <span>Transmission atlas</span>
+          <strong>Menu</strong>
+        </div>
+        <nav class="nav-menu__links" aria-label="Menu">
+          <a href="#hero" data-menu-link>Home</a>
+          <a href="#s1" data-menu-link>Journey</a>
+          <a href="#atlas" data-menu-link>Atlas</a>
+          <a href="#finale" data-menu-link>Delivery</a>
+        </nav>
+      </div>
+    </div>
 
     <div class="dot-rail" id="dot-rail" aria-hidden="true">
       <button
@@ -508,7 +528,7 @@
                   style="--x: 12%; --y: 8%"
                 >
                   <img
-                    src="https://picsum.photos/seed/voltex-grid/340/420"
+                    src="https://images.unsplash.com/photo-1509391111737-9b07f052f6b6?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8cG93ZXIlMjBncmlkfGVufDB8fDB8fHww"
                     alt="National transmission grid node"
                   />
                   <span>Grid</span>
@@ -519,7 +539,7 @@
                   style="--x: 27%; --y: 20%"
                 >
                   <img
-                    src="https://picsum.photos/seed/voltex-transformers/340/420"
+                    src="https://images.unsplash.com/photo-1509390144018-eeaf65052242?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cG93ZXIlMjBncmlkfGVufDB8fDB8fHww"
                     alt="Transformer banks"
                   />
                   <span>Transformers</span>
@@ -530,7 +550,7 @@
                   style="--x: 45%; --y: 12%"
                 >
                   <img
-                    src="https://picsum.photos/seed/voltex-cables/340/420"
+                    src="https://media.istockphoto.com/id/2224775705/photo/high-voltage-power-lines-illustrating-ai-driven-surge-in-electricity-demand.webp?a=1&b=1&s=612x612&w=0&k=20&c=f5qg5p8_QGeipZoSBGFD70_dLWeZ7_TWuD5XjbcKEy8="
                     alt="Power cables and lines"
                   />
                   <span>Power cables</span>
@@ -541,7 +561,7 @@
                   style="--x: 64%; --y: 24%"
                 >
                   <img
-                    src="https://picsum.photos/seed/voltex-substations/340/420"
+                    src="https://images.unsplash.com/photo-1728808668131-76d40d112271?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cG93ZXIlMjBzdWJzdGF0aW9ufGVufDB8fDB8fHww"
                     alt="Bulk substations"
                   />
                   <span>Substations</span>
@@ -552,7 +572,7 @@
                   style="--x: 18%; --y: 46%"
                 >
                   <img
-                    src="https://picsum.photos/seed/voltex-discos/340/420"
+                    src="https://plus.unsplash.com/premium_photo-1687252833645-8b0841ff3a30?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHBvd2VyJTIwdHJhbnNmb3JtZXJ8ZW58MHx8MHx8fDA%3D"
                     alt="Distribution companies"
                   />
                   <span>DisCos</span>
@@ -563,7 +583,7 @@
                   style="--x: 42%; --y: 54%"
                 >
                   <img
-                    src="https://picsum.photos/seed/voltex-market/340/420"
+                    src="https://images.unsplash.com/photo-1590437019634-551af5ac2e96?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGVsZWN0cmljaXR5JTIwbWFya2V0fGVufDB8fDB8fHww"
                     alt="Market operator and dispatch"
                   />
                   <span>Market ops</span>
@@ -574,7 +594,7 @@
                   style="--x: 61%; --y: 58%"
                 >
                   <img
-                    src="https://picsum.photos/seed/voltex-commission/340/420"
+                    src="https://images.unsplash.com/photo-1563456019560-2b37aa7ad890?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8ZWxlY3RyaWNpdHklMjBjb250cm9sfGVufDB8fDB8fHww"
                     alt="Regulatory commission oversight"
                   />
                   <span>Commission</span>
@@ -585,7 +605,7 @@
                   style="--x: 80%; --y: 42%"
                 >
                   <img
-                    src="https://picsum.photos/seed/voltex-control/340/420"
+                    src="https://images.unsplash.com/photo-1761064039597-908570d50c23?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cG93ZXIlMjBicmVha2VyfGVufDB8fDB8fHww"
                     alt="National control room"
                   />
                   <span>Control</span>
@@ -596,7 +616,7 @@
                   style="--x: 34%; --y: 76%"
                 >
                   <img
-                    src="https://picsum.photos/seed/voltex-oversight/340/420"
+                    src="https://images.unsplash.com/photo-1652715648725-c84d5035e9a2?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8ZWxlY3RyaWNpdHklMjBjb250cm9sfGVufDB8fDB8fHww"
                     alt="National oversight structure"
                   />
                   <span>Oversight</span>
@@ -607,7 +627,7 @@
                   style="--x: 61%; --y: 82%"
                 >
                   <img
-                    src="https://picsum.photos/seed/voltex-delivery/340/420"
+                    src="https://images.unsplash.com/photo-1706643874107-f05612a5d584?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fHBvd2VyJTIwdHJhbnNmb3JtZXJ8ZW58MHx8MHx8fDA%3D"
                     alt="End-user delivery network"
                   />
                   <span>Delivery</span>
