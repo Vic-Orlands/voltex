@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import PageContentSwitcher from "./page-content-switcher";
 import VoltexBoot from "./voltex-boot";
 import FinaleScenePortal from "./finale-scene-portal";
 
@@ -26,6 +27,7 @@ export default function Page() {
       />
       <VoltexBoot />
       <FinaleScenePortal />
+      <PageContentSwitcher />
     </>
   );
 }

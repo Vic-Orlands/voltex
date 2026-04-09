@@ -169,14 +169,6 @@ export function initVoltex() {
   const navMenuClose = document.getElementById("nav-menu-close");
   const navMenuBackdrop = navMenu?.querySelector("[data-menu-close]") ?? null;
   const navMenuLinks = [...document.querySelectorAll("[data-menu-link]")];
-  const atlasExplorer = document.getElementById("atlas-explorer");
-  const atlasExplorerTrack = document.getElementById("atlas-explorer-track");
-  const atlasExplorerNav = document.getElementById("atlas-explorer-nav");
-  const atlasExplorerClose = document.getElementById("atlas-explorer-close");
-  const atlasExplorerBackdrop =
-    atlasExplorer?.querySelector("[data-atlas-close]") ?? null;
-  const atlasLaunchArrow = document.getElementById("atlas-launch-arrow");
-  const atlasGotoLinks = [...document.querySelectorAll("[data-atlas-goto]")];
   const dotRailButtons = [...document.querySelectorAll(".dot-rail__dot")];
   const sections = [...document.querySelectorAll("[data-dot]")];
   const heroLineInner = [...document.querySelectorAll(".hero__line span")];
@@ -203,11 +195,6 @@ export function initVoltex() {
     !navMenu ||
     !navMenuToggle ||
     !navMenuClose ||
-    !atlasExplorer ||
-    !atlasExplorerTrack ||
-    !atlasExplorerNav ||
-    !atlasExplorerClose ||
-    !atlasLaunchArrow ||
     !atlasStage ||
     !atlasFrame ||
     !atlasNetwork ||
@@ -235,9 +222,7 @@ export function initVoltex() {
       navMenu.classList.remove("is-open");
       navMenu.setAttribute("aria-hidden", "true");
       navMenuToggle.setAttribute("aria-expanded", "false");
-      if (lenis && !body.classList.contains("is-atlas-explorer-open")) {
-        lenis.start();
-      }
+      if (lenis) lenis.start();
     };
 
     navMenuToggle.addEventListener("click", openMenu);
@@ -250,69 +235,6 @@ export function initVoltex() {
         closeMenu();
       }
     });
-  }
-
-  function initAtlasExplorer(lenis) {
-    let activeSlide = 0;
-
-    const syncSlide = () => {
-      atlasExplorer.dataset.slide = String(activeSlide);
-      atlasExplorerTrack.style.transform = `translateX(-${activeSlide * 50}%)`;
-      atlasExplorerNav.setAttribute(
-        "aria-label",
-        activeSlide === 0 ? "Show next atlas view" : "Show previous atlas view"
-      );
-      atlasExplorer
-        .querySelectorAll(".atlas-explorer__slide")
-        .forEach((slide, index) => {
-          slide.classList.toggle("is-active", index === activeSlide);
-        });
-    };
-
-    const openExplorer = () => {
-      body.classList.add("is-atlas-explorer-open");
-      atlasExplorer.classList.add("is-open");
-      atlasExplorer.setAttribute("aria-hidden", "false");
-      atlasLaunchArrow.setAttribute("aria-expanded", "true");
-      if (lenis) lenis.stop();
-    };
-
-    const closeExplorer = () => {
-      body.classList.remove("is-atlas-explorer-open");
-      atlasExplorer.classList.remove("is-open");
-      atlasExplorer.setAttribute("aria-hidden", "true");
-      atlasLaunchArrow.setAttribute("aria-expanded", "false");
-      if (lenis && !body.classList.contains("is-menu-open")) lenis.start();
-    };
-
-    atlasLaunchArrow.addEventListener("click", openExplorer);
-    atlasExplorerClose.addEventListener("click", closeExplorer);
-    atlasExplorerBackdrop?.addEventListener("click", closeExplorer);
-    atlasExplorerNav.addEventListener("click", () => {
-      activeSlide = activeSlide === 0 ? 1 : 0;
-      syncSlide();
-    });
-
-    atlasGotoLinks.forEach((link) => {
-      link.addEventListener("click", (event) => {
-        if (link.dataset.atlasGoto !== "atlas") return;
-        event.preventDefault();
-        closeExplorer();
-        if (lenis) {
-          lenis.scrollTo(atlasShell, { offset: -60 });
-        } else {
-          atlasShell.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      });
-    });
-
-    window.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && atlasExplorer.classList.contains("is-open")) {
-        closeExplorer();
-      }
-    });
-
-    syncSlide();
   }
 
   function runLoader() {
@@ -1163,7 +1085,6 @@ export function initVoltex() {
 
     const lenis = initLenis();
     initMenu(lenis);
-    initAtlasExplorer(lenis);
     const scrollHandler = () => updateProgress();
 
     if (lenis) {
