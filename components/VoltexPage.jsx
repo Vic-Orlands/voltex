@@ -1,3 +1,9 @@
+import dynamic from "next/dynamic";
+
+const HeroGlobe = dynamic(() => import("./HeroOrbitalGlobe"), {
+  ssr: false,
+});
+
 const GRID_TICKER_ITEMS = [
   ["FREQ", "50.00 HZ"],
   ["VOLTAGE", "440,000 V"],
@@ -259,13 +265,7 @@ export default function VoltexPage({
 
           <div className="hero__visual">
             <div className="orbital-core">
-              <div className="orbital-core__ring orbital-core__ring--outer"></div>
-              <div className="orbital-core__ring orbital-core__ring--mid"></div>
-              <div className="orbital-core__ring orbital-core__ring--inner"></div>
-              <div className="orbital-core__beam orbital-core__beam--a"></div>
-              <div className="orbital-core__beam orbital-core__beam--b"></div>
-              <div className="orbital-core__beam orbital-core__beam--c"></div>
-              <div className="orbital-core__pulse"></div>
+              <HeroGlobe />
             </div>
             <div className="hero__legend">
               <span>bulk transmission</span>

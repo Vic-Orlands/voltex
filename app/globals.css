@@ -747,96 +747,37 @@ body.is-atlas-modal-open {
 
 .hero__visual {
   position: relative;
-  min-height: 42rem;
+  min-height: 48rem;
   display: grid;
   place-items: center;
 }
 
 .orbital-core {
   position: relative;
-  width: min(32rem, 80vw);
+  width: min(43rem, 84vw);
   aspect-ratio: 1;
   border-radius: 50%;
-  background:
-    radial-gradient(
-      circle,
-      rgba(181, 255, 210, 0.14),
-      rgba(181, 255, 210, 0.03) 32%,
-      transparent 56%
-    ),
-    radial-gradient(
-      circle at 45% 45%,
-      rgba(223, 255, 88, 0.32),
-      transparent 22%
-    ),
-    radial-gradient(circle at 70% 62%, rgba(40, 217, 136, 0.3), transparent 22%);
-  outline: 1px solid rgba(129, 255, 174, 0.08);
+  overflow: hidden;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  isolation: isolate;
 }
 
-.orbital-core__ring,
-.orbital-core__beam,
-.orbital-core__pulse {
+.orbital-core__canvas {
   position: absolute;
   inset: 0;
+}
+
+.orbital-core__canvas {
+  z-index: 1;
   border-radius: 50%;
+  overflow: hidden;
 }
 
-.orbital-core__ring {
-  border: 1px solid rgba(129, 255, 174, 0.18);
-}
-
-.orbital-core__ring--outer {
-  transform: scale(1.16);
-}
-
-.orbital-core__ring--mid {
-  transform: scale(0.82);
-  border-color: rgba(223, 255, 88, 0.16);
-}
-
-.orbital-core__ring--inner {
-  transform: scale(0.54);
-}
-
-.orbital-core__beam {
-  inset: 20%;
-  background: conic-gradient(
-    from 40deg,
-    transparent 0deg 60deg,
-    rgba(129, 255, 174, 0.34) 80deg,
-    transparent 112deg 178deg,
-    rgba(223, 255, 88, 0.3) 212deg,
-    transparent 240deg 300deg,
-    rgba(181, 255, 210, 0.26) 328deg,
-    transparent 360deg
-  );
-  filter: blur(1.4rem);
-  mix-blend-mode: screen;
-}
-
-.orbital-core__beam--b {
-  transform: rotate(48deg) scale(1.08);
-}
-
-.orbital-core__beam--c {
-  transform: rotate(-36deg) scale(0.88);
-}
-
-.orbital-core__pulse {
-  inset: 34%;
-  background:
-    radial-gradient(
-      circle,
-      rgba(223, 255, 88, 0.84),
-      rgba(223, 255, 88, 0.2) 36%,
-      transparent 60%
-    ),
-    radial-gradient(
-      circle at center,
-      rgba(129, 255, 174, 0.68),
-      transparent 52%
-    );
-  filter: blur(1rem);
+.orbital-core__canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .hero__legend {
