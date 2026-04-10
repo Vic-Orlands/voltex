@@ -1,21 +1,20 @@
 "use client";
 
-import { useState } from "react";
-
-export default function HeroCallout() {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+export default function HeroCallout({ isOpen, onClose, position }) {
   return (
     <button
+      id="hero-callout"
       type="button"
-      className={`hero__callout${isExpanded ? " is-expanded" : ""}`}
-      aria-expanded={isExpanded}
-      aria-label={
-        isExpanded
-          ? "Collapse transmission callout"
-          : "Expand transmission callout"
-      }
-      onClick={() => setIsExpanded((value) => !value)}
+      className={`hero__callout${isOpen ? " is-open is-expanded" : ""}`}
+      aria-expanded={isOpen}
+      aria-hidden={!isOpen}
+      aria-label="Close transmission callout"
+      tabIndex={isOpen ? 0 : -1}
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+      }}
+      onClick={onClose}
     >
       <span className="hero__callout-shell">
         <span className="hero__callout-head">

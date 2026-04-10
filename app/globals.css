@@ -759,6 +759,13 @@ body.is-atlas-modal-open {
   isolation: isolate;
 }
 
+.orbital-core--trigger {
+  display: block;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
 .orbital-core__canvas {
   position: absolute;
   inset: 0;
@@ -777,8 +784,8 @@ body.is-atlas-modal-open {
 
 .hero__callout {
   position: absolute;
-  left: clamp(-0.8rem, -1vw, -0.15rem);
-  top: clamp(2.6rem, 4vw, 3.4rem);
+  left: 0;
+  top: 0;
   padding: 0;
   border: 0;
   background: transparent;
@@ -786,6 +793,21 @@ body.is-atlas-modal-open {
   cursor: pointer;
   overflow: visible;
   text-align: left;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, 1rem, 0) scale(0.9);
+  transform-origin: top left;
+  transition:
+    left 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    top 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 220ms ease-out,
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero__callout.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0) scale(1);
 }
 
 .hero__callout-shell {

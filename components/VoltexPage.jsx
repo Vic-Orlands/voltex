@@ -1,3 +1,6 @@
+"use client";
+
+import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import HeroCallout from "./HeroCallout";
 
@@ -121,6 +124,38 @@ export default function VoltexPage({
   isAtlasSwitcherOpen = false,
   onOpenAtlasSwitcher,
 }) {
+  const heroVisualRef = useRef(null);
+  const [heroCalloutState, setHeroCalloutState] = useState({
+    isOpen: false,
+    x: 0,
+    y: 0,
+  });
+
+  const handleHeroGlobeClick = (event) => {
+    const container = heroVisualRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const rect = container.getBoundingClientRect();
+    const maxWidth = Math.min(rect.width * 0.42, 248);
+    const maxHeight = 144;
+    const margin = 18;
+    const clickX = event.clientX || rect.left + rect.width / 2;
+    const clickY = event.clientY || rect.top + rect.height / 2;
+    const nextX = clickX - rect.left;
+    const nextY = clickY - rect.top;
+    const maxX = Math.max(margin, rect.width - maxWidth - margin);
+    const maxY = Math.max(margin, rect.height - maxHeight - margin);
+
+    setHeroCalloutState({
+      isOpen: true,
+      x: Math.min(maxX, Math.max(margin, nextX)),
+      y: Math.min(maxY, Math.max(margin, nextY)),
+    });
+  };
+
   return (
     <>
       <div className="loader" id="loader">
@@ -263,11 +298,31 @@ export default function VoltexPage({
               </a>
             </div>
           </div>
-          <div className="hero__visual">
-            <div className="orbital-core">
+          <div className="hero__visual" ref={heroVisualRef}>
+            <button
+              className="orbital-core orbital-core--trigger"
+              type="button"
+              aria-expanded={heroCalloutState.isOpen}
+              aria-controls="hero-callout"
+              aria-label={
+                heroCalloutState.isOpen
+                  ? "Move transmission callout"
+                  : "Show transmission callout"
+              }
+              onClick={handleHeroGlobeClick}
+            >
               <HeroGlobe />
-            </div>
-            <HeroCallout />
+            </button>
+            <HeroCallout
+              isOpen={heroCalloutState.isOpen}
+              position={heroCalloutState}
+              onClose={() =>
+                setHeroCalloutState((currentState) => ({
+                  ...currentState,
+                  isOpen: false,
+                }))
+              }
+            />
           </div>
 
           <div className="scroll-cue">
