@@ -135,7 +135,6 @@ img {
   line-height: 0.9;
   letter-spacing: 0.22em;
   color: var(--green);
-  text-shadow: var(--glow-green);
 }
 
 .loader__tag,
@@ -172,7 +171,6 @@ img {
   font-size: 1.5rem;
   letter-spacing: 0.24em;
   color: var(--lime);
-  text-shadow: var(--glow-lime);
 }
 
 .nav {
@@ -195,13 +193,11 @@ img {
   font-size: 2rem;
   letter-spacing: 0.18em;
   color: var(--green);
-  text-shadow: var(--glow-green);
 }
 
 .nav__brand em {
   color: var(--lime);
   font-style: normal;
-  text-shadow: var(--glow-lime);
 }
 
 .nav__links {
@@ -409,7 +405,6 @@ img {
   line-height: 0.92;
   letter-spacing: 0.08em;
   color: var(--green);
-  text-shadow: var(--glow-green);
 }
 
 .nav-menu__links {
@@ -695,7 +690,6 @@ body.is-atlas-modal-open {
 
 .hero__accent {
   color: var(--green);
-  text-shadow: var(--glow-green);
 }
 
 .hero__body,
@@ -895,7 +889,6 @@ body.is-atlas-modal-open {
   font-size: clamp(2.8rem, 5vw, 4rem);
   line-height: 0.9;
   color: var(--lime);
-  text-shadow: var(--glow-lime);
 }
 
 .hero__callout-copy {
@@ -1011,12 +1004,10 @@ body.is-atlas-modal-open {
 
 .journey-copy__title span {
   color: var(--green);
-  text-shadow: var(--glow-green);
 }
 
 .journey-copy__title .alt {
   color: var(--lime);
-  text-shadow: var(--glow-lime);
 }
 
 .journey-data {
@@ -1090,7 +1081,6 @@ body.is-atlas-modal-open {
   line-height: 0.86;
   overflow-wrap: anywhere;
   color: var(--lime);
-  text-shadow: var(--glow-lime);
 }
 
 .journey-stats span,
@@ -1704,7 +1694,6 @@ body.is-atlas-modal-open {
   line-height: 0.92;
   letter-spacing: 0.06em;
   color: var(--green);
-  text-shadow: var(--glow-green);
 }
 
 .atlas-explorer__pages {
@@ -2033,7 +2022,6 @@ body.is-atlas-modal-open {
 .dummy-page__meta strong {
   font-size: clamp(2rem, 4vw, 3rem);
   color: var(--green);
-  text-shadow: var(--glow-green);
 }
 
 .dummy-page__body {
@@ -2182,7 +2170,6 @@ body.is-atlas-modal-open {
 
 .finale__title .accent {
   color: var(--green);
-  text-shadow: var(--glow-green);
 }
 
 .finale__line {
