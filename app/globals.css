@@ -648,13 +648,14 @@ body.is-atlas-modal-open {
 }
 
 .hero {
-  min-height: 100svh;
+  min-height: 100vh;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.82fr);
   align-items: end;
   gap: clamp(1.5rem, 3vw, 4rem);
   padding-top: 7rem;
   padding-bottom: 5rem;
+  position: relative;
 }
 
 .hero__copy {
@@ -910,7 +911,7 @@ body.is-atlas-modal-open {
 
 .scroll-cue {
   position: absolute;
-  right: clamp(1rem, 2vw, 3rem);
+  right: clamp(0.25rem, 1vw, 0.55rem);
   bottom: 2rem;
   display: grid;
   justify-items: center;
@@ -957,7 +958,7 @@ body.is-atlas-modal-open {
 }
 
 .journey-scene__spacer {
-  height: 190svh;
+  /* height: 190svh; */
 }
 
 .journey-scene__sticky {
@@ -2366,7 +2367,8 @@ body.is-atlas-modal-open {
   }
 
   .journey-scene__spacer {
-    height: 168svh;
+    /* height: 168svh; */
+    height: 15svh;
   }
 
   .journey-stage {

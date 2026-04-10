@@ -263,7 +263,6 @@ export default function VoltexPage({
               </a>
             </div>
           </div>
-
           <div className="hero__visual">
             <div className="orbital-core">
               <HeroGlobe />

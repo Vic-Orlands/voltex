@@ -9,7 +9,7 @@ const loaderBootScript = `
 `;
 
 export const metadata = {
-  title: "VOLTEX — Power. Transmitted.",
+  title: "Voltex — Power",
   description:
     "An immersive green-tinted transmission atlas following Nigeria's power grid from generation to national control.",
 };
