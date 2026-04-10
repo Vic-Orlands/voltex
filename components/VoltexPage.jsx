@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import HeroCallout from "./HeroCallout";
 
 const HeroGlobe = dynamic(() => import("./HeroOrbitalGlobe"), {
   ssr: false,
@@ -267,11 +268,7 @@ export default function VoltexPage({
             <div className="orbital-core">
               <HeroGlobe />
             </div>
-            <div className="hero__legend">
-              <span>bulk transmission</span>
-              <strong>440kV</strong>
-              <small>step-up, move, step-down, distribute, monitor</small>
-            </div>
+            <HeroCallout />
           </div>
 
           <div className="scroll-cue">
@@ -552,11 +549,11 @@ export default function VoltexPage({
 
         <section className="atlas" id="atlas" data-dot="atlas">
           <div className="atlas__intro">
-            <p className="atlas__eyebrow">Interactive image atlas</p>
-            <h2 className="atlas__title">
-              Zoom through the transmission network.
-            </h2>
-            <div className="atlas__launch">
+            <div className="atlas__intro__content">
+              <p className="atlas__eyebrow">Interactive image atlas</p>
+              <h2 className="atlas__title">
+                Zoom through the transmission network.
+              </h2>
               <p className="atlas__body">
                 A linked image field inspired by intelligence maps and network
                 diagrams. Hover to tilt. Click any node and the section zooms
@@ -564,15 +561,16 @@ export default function VoltexPage({
                 transformers, cables, market operators, oversight, and delivery
                 chain.
               </p>
-              <button
-                className="atlas__launch-arrow"
-                id="atlas-launch-arrow"
-                type="button"
-                aria-expanded={isAtlasSwitcherOpen}
-                aria-label="Open advanced network preview"
-                onClick={onOpenAtlasSwitcher}
-              ></button>
             </div>
+
+            <button
+              className="atlas__launch-arrow"
+              id="atlas-launch-arrow"
+              type="button"
+              aria-expanded={isAtlasSwitcherOpen}
+              aria-label="Open advanced network preview"
+              onClick={onOpenAtlasSwitcher}
+            ></button>
           </div>
 
           <div className="atlas__shell" id="atlas-shell">

@@ -7,7 +7,7 @@ import * as THREE from "three";
 
 function ModelGlobe() {
   const { scene } = useGLTF("/Globe.glb");
-  const model = useRef(null);
+  const globeGroup = useRef(null);
   const wrapper = useRef(null);
 
   const globeScene = useMemo(() => {
@@ -55,14 +55,16 @@ function ModelGlobe() {
         Math.cos(state.clock.elapsedTime * 0.16) * 0.04;
     }
 
-    if (model.current) {
-      model.current.rotation.y += delta * 0.18;
+    if (globeGroup.current) {
+      globeGroup.current.rotation.y += delta * 0.18;
     }
   });
 
   return (
     <group ref={wrapper}>
-      <primitive ref={model} object={globeScene} scale={0.00042} />
+      <group ref={globeGroup}>
+        <primitive object={globeScene} scale={0.00042} />
+      </group>
     </group>
   );
 }

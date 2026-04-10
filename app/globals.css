@@ -780,43 +780,132 @@ body.is-atlas-modal-open {
   height: 100% !important;
 }
 
-.hero__legend {
+.hero__callout {
   position: absolute;
-  right: 0;
-  bottom: 1rem;
+  left: clamp(-0.8rem, -1vw, -0.15rem);
+  top: clamp(2.6rem, 4vw, 3.4rem);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  z-index: 3;
+  cursor: pointer;
+  overflow: visible;
+  text-align: left;
+}
+
+.hero__callout-shell {
+  position: relative;
   display: grid;
+  align-content: start;
   gap: 0.4rem;
-  padding: 1rem 1.1rem;
-  min-width: 12rem;
+  width: clamp(10.5rem, 13vw, 11.4rem);
+  height: 3.8rem;
+  padding: 0.8rem 0.95rem;
   border-radius: calc(var(--radius-lg) + 0.25rem);
-  border: 1px solid rgba(129, 255, 174, 0.1);
+  border: 1px solid rgba(129, 255, 174, 0.12);
   background: rgba(6, 22, 16, 0.58);
   backdrop-filter: blur(14px);
   box-shadow: 0 16px 50px rgba(0, 0, 0, 0.24);
+  overflow: hidden;
+  transition:
+    width 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms ease,
+    background-color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+  will-change: width, height, transform;
 }
 
-.hero__legend span,
-.hero__legend small {
+.hero__callout:hover .hero__callout-shell {
+  transform: translateY(-0.08rem);
+  border-color: rgba(129, 255, 174, 0.18);
+}
+
+.hero__callout.is-expanded .hero__callout-shell {
+  width: min(15.5rem, 42vw);
+  height: 9rem;
+  background: rgba(6, 22, 16, 0.72);
+}
+
+.hero__callout-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.hero__callout-kicker,
+.hero__callout-copy {
   font-family: "Space Mono", monospace;
   font-size: 0.65rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-.hero__legend span {
+.hero__callout-kicker {
   color: rgba(181, 255, 210, 0.55);
+  opacity: 0.82;
+  white-space: nowrap;
 }
 
-.hero__legend strong {
+.hero__callout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  color: var(--green);
+  flex: 0 0 auto;
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 220ms ease,
+    opacity 220ms ease;
+}
+
+.hero__callout-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.hero__callout.is-expanded .hero__callout-icon {
+  transform: rotate(180deg);
+  color: var(--lime);
+}
+
+.hero__callout-body {
+  position: absolute;
+  left: 0.95rem;
+  right: 0.95rem;
+  bottom: 0.95rem;
+  display: grid;
+  gap: 0.32rem;
+  opacity: 0;
+  transform: translateY(0.7rem);
+  transition:
+    opacity 180ms ease-out,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.hero__callout-value {
+  display: block;
   font-family: "Bebas Neue", sans-serif;
-  font-size: 4rem;
+  font-size: clamp(2.8rem, 5vw, 4rem);
   line-height: 0.9;
   color: var(--lime);
   text-shadow: var(--glow-lime);
 }
 
-.hero__legend small {
+.hero__callout-copy {
   color: rgba(243, 245, 239, 0.38);
+  line-height: 1.55;
+}
+
+.hero__callout.is-expanded .hero__callout-body {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 210ms;
 }
 
 .scroll-cue {
@@ -1236,18 +1325,18 @@ body.is-atlas-modal-open {
 }
 
 .atlas__intro {
+  position: relative;
   display: grid;
   gap: 1rem;
-  width: min(46rem, 100%);
   margin-bottom: 2.8rem;
+  width: 100%;
 }
 
-.atlas__launch {
-  position: relative;
-  display: block;
+.atlas__intro__content {
+  width: min(46rem, 100%);
 }
 
-.atlas__launch .atlas__body {
+.atlas__body {
   margin: 0;
 }
 
@@ -1276,8 +1365,8 @@ body.is-atlas-modal-open {
 
 .atlas__launch-arrow {
   position: absolute;
-  top: 2.5rem;
-  right: clamp(1rem, 3vw, 5rem);
+  bottom: 0;
+  right: 0;
 }
 
 .atlas__launch-arrow:hover,
@@ -1663,18 +1752,24 @@ body.is-atlas-modal-open {
 }
 
 .atlas-explorer.is-open .atlas-explorer__page.is-active .atlas-explorer__header,
-.atlas-explorer.is-open .atlas-explorer__page.is-active .atlas-explorer__surface,
+.atlas-explorer.is-open
+  .atlas-explorer__page.is-active
+  .atlas-explorer__surface,
 .atlas-explorer.is-open .atlas-explorer__nav,
 .atlas-explorer.is-open .atlas-explorer__close {
   opacity: 1;
   transform: translateY(0);
 }
 
-.atlas-explorer.is-open .atlas-explorer__page.is-active .atlas-explorer__header {
+.atlas-explorer.is-open
+  .atlas-explorer__page.is-active
+  .atlas-explorer__header {
   transition-delay: 140ms;
 }
 
-.atlas-explorer.is-open .atlas-explorer__page.is-active .atlas-explorer__surface {
+.atlas-explorer.is-open
+  .atlas-explorer__page.is-active
+  .atlas-explorer__surface {
   transition-delay: 220ms;
 }
 
@@ -2140,6 +2235,15 @@ body.is-atlas-modal-open {
     min-height: 28rem;
   }
 
+  .hero__callout {
+    left: 0;
+    top: 2rem;
+  }
+
+  .hero__callout.is-expanded .hero__callout-shell {
+    width: min(14rem, 48vw);
+  }
+
   .journey-stage__panel {
     width: 100%;
     max-width: 48rem;
@@ -2154,8 +2258,9 @@ body.is-atlas-modal-open {
   }
 
   .atlas-explorer__panel {
-    height: min(44rem, calc(100vh - 1rem));
-    max-height: calc(100vh - 1rem);
+    width: min(42rem, calc(100vw - 1.5rem));
+    height: min(40rem, calc(100vh - 2rem));
+    max-height: calc(100vh - 2rem);
   }
 
   .dummy-page__hero {
@@ -2165,7 +2270,7 @@ body.is-atlas-modal-open {
   .atlas-stage__frame {
     position: relative;
     top: auto;
-    min-height: 54rem;
+    min-height: 46rem;
   }
 
   .journey-copy,
@@ -2223,8 +2328,23 @@ body.is-atlas-modal-open {
     font-size: 1rem;
   }
 
-  .atlas__launch {
-    padding-right: 4.5rem;
+  .grid-ticker {
+    left: 0;
+    right: 0;
+  }
+
+  .hero__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+
+  .hero__btn {
+    width: 100%;
+    margin-top: 0;
+    padding-inline: 0.9rem;
   }
 
   .atlas__launch-arrow,
@@ -2264,7 +2384,7 @@ body.is-atlas-modal-open {
   }
 
   .atlas-stage__frame {
-    min-height: 42rem;
+    min-height: 34rem;
     padding: 0.9rem;
   }
 
@@ -2279,6 +2399,41 @@ body.is-atlas-modal-open {
   .cursor-dot,
   .cursor-ring {
     display: none;
+  }
+
+  .hero__callout {
+    display: none;
+  }
+
+  .atlas-explorer__panel {
+    width: calc(100vw - 1rem);
+    height: calc(100vh - 1.5rem);
+    max-height: calc(100vh - 1.5rem);
+    padding: 0.85rem;
+  }
+
+  .atlas-explorer__page {
+    padding: 0.6rem 0.6rem 4.4rem;
+    gap: 0.8rem;
+  }
+
+  .atlas-explorer__header {
+    padding-right: 4rem;
+  }
+
+  .atlas-explorer__surface {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(14rem, 0.95fr) minmax(0, 1fr);
+    gap: 0.7rem;
+  }
+
+  .atlas-explorer__media {
+    min-height: 14rem;
+  }
+
+  .atlas-explorer__copy {
+    padding: 1rem;
+    align-content: start;
   }
 }
 
